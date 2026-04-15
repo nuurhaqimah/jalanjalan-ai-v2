@@ -103,6 +103,24 @@
       let lastItinerary = null;
       let typingEl = null;   // single reference — no duplicate IDs
       let isSending = false; // prevent overlapping requests
+      let isInterestStep    = false;
+      let selectedInterests = [];
+
+      // ── Toast helper ──────────────────────────────────────
+      let toastTimer = null;
+      function showToast(msg) {
+        let toast = document.getElementById('chatToast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'chatToast';
+          toast.className = 'chat-toast';
+          document.querySelector('.chat-card').appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+      }
 
       // --- Disable send button when input is empty ---
       function updateSendBtn() {
@@ -111,18 +129,98 @@
       input.addEventListener('input', updateSendBtn);
       updateSendBtn();
 
-      function renderOptions(options){
-        if (!Array.isArray(options) || options.length === 0){
+      function renderOptions(options, next) {
+        isInterestStep    = (next === 'interests');
+        selectedInterests = [];
+
+        if (!Array.isArray(options) || options.length === 0) {
           quickOptions.style.display = 'none';
           quickOptions.innerHTML = '';
           return;
         }
-        quickOptions.innerHTML = options.map(opt => {
-          const label = typeof opt === 'string' ? opt : (opt.label || opt.value || '');
-          const value = typeof opt === 'string' ? opt : (opt.value || opt.label || '');
-          return `<button class="chip" data-value="${value}">${label}</button>`;
-        }).join('');
-        quickOptions.style.display = '';
+
+        if (isInterestStep) {
+          // ── Multi-select chips ──────────────────────────────
+          const chips = options.map(opt => {
+            const label = typeof opt === 'string' ? opt : (opt.label || opt.value || '');
+            const value = typeof opt === 'string' ? opt : (opt.value || opt.label || '');
+            return `<button class="chip interest-chip" data-value="${value}">${label}</button>`;
+          }).join('');
+
+          quickOptions.innerHTML = chips + `
+            <div class="interest-confirm-bar">
+              <span class="interest-hint" id="interestHint">Pick at least 1 interest to continue</span>
+              <button class="chip chip-done chip-done-inactive" id="interestDoneBtn">That's it →</button>
+            </div>`;
+          quickOptions.style.display = '';
+
+          // Scroll so the confirm bar is visible after chips render
+          setTimeout(() => {
+            const confirmBar = document.getElementById('interestDoneBtn');
+            if (confirmBar) confirmBar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 80);
+
+          function refreshChipStates() {
+            const count = selectedInterests.length;
+            const atMax = count >= 2;
+
+            // Dim unselected chips when at max
+            quickOptions.querySelectorAll('.interest-chip').forEach(c => {
+              if (!c.classList.contains('selected')) {
+                c.style.opacity       = atMax ? '0.35' : '1';
+                c.style.pointerEvents = atMax ? 'none'  : '';
+              }
+            });
+
+            // Hint text
+            const hint = document.getElementById('interestHint');
+            if (hint) hint.textContent = count === 0
+              ? 'Pick at least 1 interest to continue'
+              : count === 1
+                ? '1 selected — confirm or pick one more'
+                : '2 selected — ready to go!';
+
+            // Toggle done button active/inactive style
+            const doneBtn = document.getElementById('interestDoneBtn');
+            if (doneBtn) {
+              doneBtn.classList.toggle('chip-done-inactive', count === 0);
+              doneBtn.classList.toggle('chip-done-ready',    count > 0);
+            }
+          }
+
+          quickOptions.querySelectorAll('.interest-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+              const val = chip.dataset.value;
+              if (chip.classList.contains('selected')) {
+                chip.classList.remove('selected');
+                selectedInterests = selectedInterests.filter(v => v !== val);
+              } else {
+                if (selectedInterests.length >= 2) return;
+                chip.classList.add('selected');
+                selectedInterests.push(val);
+              }
+              refreshChipStates();
+            });
+          });
+
+          document.getElementById('interestDoneBtn').addEventListener('click', () => {
+            if (!selectedInterests.length) {
+              showToast('Please select at least one interest to continue!');
+              return;
+            }
+            const display = selectedInterests.join(' and ');
+            sendMessage(display, { interests: selectedInterests });
+          });
+
+        } else {
+          // ── Normal single-select chips ──────────────────────
+          quickOptions.innerHTML = options.map(opt => {
+            const label = typeof opt === 'string' ? opt : (opt.label || opt.value || '');
+            const value = typeof opt === 'string' ? opt : (opt.value || opt.label || '');
+            return `<button class="chip" data-value="${value}">${label}</button>`;
+          }).join('');
+          quickOptions.style.display = '';
+        }
       }
 
       function appendMessage(text, who='user'){
@@ -163,23 +261,34 @@
         chatBox.appendChild(wrapper);
         chatBox.scrollTop = chatBox.scrollHeight;
         saveBtn.style.display = '';
+        // Restart wiggle each time an itinerary is rendered
+        saveBtn.classList.remove('btn-wiggle');
+        void saveBtn.offsetWidth; // force reflow so animation restarts cleanly
+        saveBtn.classList.add('btn-wiggle');
       }
 
-      async function sendMessage(forcedText){
+      async function sendMessage(forcedText, forcedPrefs){
         const text = (typeof forcedText === 'string' ? forcedText : input.value).trim();
         if (!text || isSending) return;
-        appendMessage(text, 'user');
+        // Show a friendly label in chat when multiple interests selected
+        const displayText = (forcedPrefs && forcedPrefs.interests && forcedPrefs.interests.length > 1)
+          ? forcedPrefs.interests.join(' & ')
+          : text;
+        appendMessage(displayText, 'user');
         input.value = '';
         isSending = true;
+        isInterestStep = false;
         updateSendBtn();
         quickOptions.style.display = 'none';
         quickOptions.innerHTML = '';
         showTyping();
         try {
+          const body = { message: text };
+          if (forcedPrefs) body.prefs = forcedPrefs;
           const res = await fetch('/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: text })
+            body: JSON.stringify(body)
           });
           if (!res.ok) throw new Error(`Server error ${res.status}`);
           const data = await res.json();
@@ -191,7 +300,7 @@
               : data.reply;
             appendMessage(replyText, 'bot');
           }
-          renderOptions(data.options || []);
+          renderOptions(data.options || [], data.next);
           if (data.itinerary) renderItinerary(data.itinerary);
         } catch (e) {
           appendMessage('Something went wrong. Please try again.', 'bot');
@@ -206,6 +315,7 @@
       sendBtn.addEventListener('click', () => sendMessage());
       input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }});
       quickOptions.addEventListener('click', (e) => {
+        if (isInterestStep) return; // handled per-chip inside renderOptions
         const chip = e.target.closest('.chip');
         if (!chip) return;
         sendMessage(chip.dataset.value);

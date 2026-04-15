@@ -860,32 +860,79 @@ def chat():
         time_blocks = [(9,11), (11,13), (14,16), (17,19)]
         needed_pois = len(time_blocks) * 2
 
+        seen_ids = set()
         collected = []
-        idx = 0
-        failed_streak = 0
-        while len(collected) < needed_pois and interests:
-            interest = interests[idx % len(interests)]
-            pois = get_pois(category=interest, budget_level=budget, travel_style=travel_style, location=state.get("location"), country=country, limit=1)
-            if pois:
-                collected.extend(pois)
-                failed_streak = 0
-            else:
-                failed_streak += 1
-                if failed_streak >= len(interests):
+
+        def add_unique(pois):
+            for p in pois:
+                if p["id"] not in seen_ids:
+                    seen_ids.add(p["id"])
+                    collected.append(p)
+
+        # Fallback ladder — country is ALWAYS locked; relax other filters
+        # in priority order: drop style first, then budget, then category last.
+
+        # Pass 1: category + budget + style + country  (strictest)
+        for interest in interests:
+            if len(collected) >= needed_pois:
+                break
+            add_unique(get_pois(
+                category=interest,
+                budget_level=budget,
+                travel_style=travel_style,
+                location=state.get("location"),
+                country=country,
+                limit=needed_pois,
+            ))
+
+        # Pass 2: category + budget + country  (drop travel_style)
+        if len(collected) < needed_pois:
+            for interest in interests:
+                if len(collected) >= needed_pois:
                     break
-            idx += 1
-        # Fallback 1: drop category filter, keep budget + style + country
+                add_unique(get_pois(
+                    category=interest,
+                    budget_level=budget,
+                    country=country,
+                    limit=needed_pois - len(collected),
+                ))
+
+        # Pass 3: category + country  (drop budget AND style, keep interest)
         if len(collected) < needed_pois:
-            extra = get_pois(budget_level=budget, travel_style=travel_style, location=state.get("location"), country=country, limit=needed_pois - len(collected))
-            collected.extend(extra)
-        # Fallback 2: drop budget + style, keep country only
+            for interest in interests:
+                if len(collected) >= needed_pois:
+                    break
+                add_unique(get_pois(
+                    category=interest,
+                    country=country,
+                    limit=needed_pois - len(collected),
+                ))
+
+        # Pass 4: budget + style + country  (drop category — fill remaining slots)
         if len(collected) < needed_pois:
-            extra = get_pois(country=country, limit=needed_pois - len(collected))
-            collected.extend(extra)
-        # Fallback 3: any POI at all
+            add_unique(get_pois(
+                budget_level=budget,
+                travel_style=travel_style,
+                country=country,
+                limit=needed_pois - len(collected),
+            ))
+
+        # Pass 5: country only  (widest, still country-locked)
         if len(collected) < needed_pois:
-            extra = get_pois(limit=needed_pois - len(collected))
-            collected.extend(extra)
+            add_unique(get_pois(
+                country=country,
+                limit=needed_pois - len(collected),
+            ))
+
+        # Pass 6: not enough country POIs — cycle what we have rather than
+        # pulling from other countries (repeat > wrong country)
+        if collected and len(collected) < needed_pois:
+            base = list(collected)
+            i = 0
+            while len(collected) < needed_pois:
+                collected.append(base[i % len(base)])
+                i += 1
+
         collected = collected[:needed_pois]
 
         itinerary = []
@@ -1002,17 +1049,22 @@ def mytrips_export(it_id):
     user = session.get('user')
     if not user:
         return redirect('/user/login')
-    if not WEASYPRINT_AVAILABLE:
-        return jsonify({"error": "WeasyPrint not installed. Install weasyprint to enable PDF export."}), 500
-    r = db_query_db("SELECT title, description, data FROM itinerary WHERE id=%s AND user_id=%s", (it_id, user.get('id')), one=True)
+    r = db_query_db(
+        "SELECT title, description, data, created_at FROM itinerary WHERE id=%s AND user_id=%s",
+        (it_id, user.get('id')), one=True
+    )
     if not r:
         return redirect('/mytrips')
-    title, description, data = r
-    html = render_itinerary_html(title, description, data or {})
-    pdf_dir = tempfile.gettempdir()
-    pdf_path = os.path.join(pdf_dir, f"itinerary_{it_id}.pdf")
-    HTML(string=html).write_pdf(pdf_path)
-    return send_file(pdf_path, as_attachment=True, download_name=f"itinerary_{it_id}.pdf")
+    title, description, data, created_at = r
+    created_str = created_at.strftime('%d %b %Y') if hasattr(created_at, 'strftime') else str(created_at)[:10]
+    trip = type('Trip', (), {
+        'id':         it_id,
+        'title':      title,
+        'description': description,
+        'data':       data or {},
+        'created_at': created_str,
+    })()
+    return render_template('print_itinerary.html', trip=trip)
 
 # -------------------------
 # Save itinerary (legacy table 'itineraries')

@@ -51,7 +51,7 @@
         </div>
         <div class="actions">
           <a href="{{ url_for('mytrips') }}" class="btn secondary">← Back to My Trips</a>
-          <a href="{{ url_for('mytrips_export', it_id=trip.id) }}" class="btn">Export PDF</a>
+          <a href="{{ url_for('mytrips_export', it_id=trip.id) }}" class="btn" target="_blank">Export PDF</a>
           <button class="btn danger" id="deleteTripBtn">Delete Trip</button>
         </div>
       </div>

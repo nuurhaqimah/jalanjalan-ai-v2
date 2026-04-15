@@ -71,16 +71,28 @@
       <!-- Destinations Table -->
       <div class="admin-card">
         <h2>All Destinations</h2>
-        <div style="overflow-x: auto;">
+
+        <!-- Filter Bar -->
+        <div class="admin-filter-bar">
+          <input class="admin-search-input" type="text" id="filterSearch" placeholder="Search name or location…" />
+          <select id="filterCategory" class="admin-filter-select"><option value="">All Categories</option></select>
+          <select id="filterBudget"   class="admin-filter-select"><option value="">All Budgets</option></select>
+          <select id="filterStyle"    class="admin-filter-select"><option value="">All Styles</option></select>
+          <select id="filterCountry"  class="admin-filter-select"><option value="">All Countries</option></select>
+          <button class="admin-clear-btn" id="clearFilters">✕ Clear</button>
+        </div>
+        <p class="admin-results-count" id="resultsCount"></p>
+
+        <div class="admin-table-scroll">
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Budget</th>
-                <th>Style</th>
-                <th>Location</th>
-                <th>Country</th>
+                <th class="sortable" data-col="name">Name <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-col="category">Category <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-col="budget_level">Budget <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-col="travel_style">Style <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-col="location">Location <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-col="country">Country <span class="sort-icon">↕</span></th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -91,9 +103,30 @@
     </div>
 
     <script>
-      const form = document.getElementById('destinationForm');
-      const tableBody = document.getElementById('destinationsTable');
+      const form        = document.getElementById('destinationForm');
+      const tableBody   = document.getElementById('destinationsTable');
       const countrySelect = document.getElementById('country');
+
+      // ── Master data + filter/sort state ──────────────────
+      let allPois   = [];
+      let sortState = { col: null, dir: 'asc' };
+
+      // Semantic rank maps — columns that shouldn't sort alphabetically
+      const SORT_RANK = {
+        budget_level: { cheap: 0, low: 0, moderate: 1, medium: 1, luxury: 2, high: 2 },
+      };
+
+      // Reverse maps: DB canonical value → form <option> value
+      // The backend normalises alam→nature, cheap→low etc. on save,
+      // so when loading a row for editing we must convert back.
+      const CATEGORY_REVERSE = { nature: 'alam', food: 'kuliner', history: 'sejarah', shopping: 'belanja' };
+      const BUDGET_REVERSE   = { low: 'cheap', medium: 'moderate', high: 'luxury' };
+
+      function sortValue(col, raw) {
+        const val = (raw || '').toLowerCase();
+        if (SORT_RANK[col] && val in SORT_RANK[col]) return SORT_RANK[col][val];
+        return val; // fall back to string for localeCompare
+      }
 
       function toFormData(obj) {
         const fd = new FormData();
@@ -103,8 +136,18 @@
         return fd;
       }
 
+      // ── Render ────────────────────────────────────────────
       function renderTable(pois) {
         tableBody.innerHTML = '';
+        if (pois.length === 0) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align:center; padding:28px; color:#888; font-style:italic;">
+                No destinations match your filters.
+              </td>
+            </tr>`;
+          return;
+        }
         pois.forEach((dest) => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
@@ -123,12 +166,119 @@
         });
       }
 
+      // ── Filter + Sort ─────────────────────────────────────
+      function applyFilters() {
+        const search  = document.getElementById('filterSearch').value.trim().toLowerCase();
+        const cat     = document.getElementById('filterCategory').value;
+        const budget  = document.getElementById('filterBudget').value;
+        const style   = document.getElementById('filterStyle').value;
+        const country = document.getElementById('filterCountry').value;
+
+        let filtered = allPois.filter(p => {
+          if (search  && !p.name.toLowerCase().includes(search) && !(p.location || '').toLowerCase().includes(search)) return false;
+          if (cat     && p.category     !== cat)     return false;
+          if (budget  && p.budget_level !== budget)  return false;
+          if (style   && p.travel_style !== style)   return false;
+          if (country && p.country      !== country) return false;
+          return true;
+        });
+
+        if (sortState.col) {
+          filtered = [...filtered].sort((a, b) => {
+            const av = sortValue(sortState.col, a[sortState.col]);
+            const bv = sortValue(sortState.col, b[sortState.col]);
+            let cmp;
+            if (typeof av === 'number' && typeof bv === 'number') {
+              cmp = av - bv;
+            } else {
+              cmp = String(av).localeCompare(String(bv));
+            }
+            return sortState.dir === 'asc' ? cmp : -cmp;
+          });
+        }
+
+        const count = document.getElementById('resultsCount');
+        count.textContent = `Showing ${filtered.length} of ${allPois.length} destination${allPois.length !== 1 ? 's' : ''}`;
+
+        renderTable(filtered);
+      }
+
+      // ── Populate filter dropdowns from live data ──────────
+      function populateFilterDropdowns() {
+        const fields = {
+          filterCategory: { key: 'category',     label: 'All Categories' },
+          filterBudget:   { key: 'budget_level',  label: 'All Budgets'    },
+          filterStyle:    { key: 'travel_style',  label: 'All Styles'     },
+          filterCountry:  { key: 'country',       label: 'All Countries'  },
+        };
+        Object.entries(fields).forEach(([elId, { key, label }]) => {
+          const el  = document.getElementById(elId);
+          const cur = el.value;
+          const unique = [...new Set(allPois.map(p => p[key]).filter(Boolean))].sort();
+          el.innerHTML = `<option value="">${label}</option>`;
+          unique.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = v; opt.textContent = v;
+            el.appendChild(opt);
+          });
+          el.value = cur; // preserve any existing selection
+        });
+      }
+
+      // ── Sort on header click ──────────────────────────────
+      document.querySelectorAll('.admin-table th.sortable').forEach(th => {
+        th.addEventListener('click', () => {
+          const col = th.dataset.col;
+          if (sortState.col === col) {
+            sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc';
+          } else {
+            sortState.col = col;
+            sortState.dir = 'asc';
+          }
+          // Update all sort icons
+          document.querySelectorAll('.admin-table th.sortable').forEach(h => {
+            const icon = h.querySelector('.sort-icon');
+            if (h.dataset.col === sortState.col) {
+              icon.textContent = sortState.dir === 'asc' ? '↑' : '↓';
+              h.classList.add('sort-active');
+            } else {
+              icon.textContent = '↕';
+              h.classList.remove('sort-active');
+            }
+          });
+          applyFilters();
+        });
+      });
+
+      // ── Filter input listeners ────────────────────────────
+      ['filterSearch','filterCategory','filterBudget','filterStyle','filterCountry'].forEach(id => {
+        document.getElementById(id).addEventListener('input', applyFilters);
+        document.getElementById(id).addEventListener('change', applyFilters);
+      });
+
+      document.getElementById('clearFilters').addEventListener('click', () => {
+        document.getElementById('filterSearch').value   = '';
+        document.getElementById('filterCategory').value = '';
+        document.getElementById('filterBudget').value   = '';
+        document.getElementById('filterStyle').value    = '';
+        document.getElementById('filterCountry').value  = '';
+        sortState = { col: null, dir: 'asc' };
+        document.querySelectorAll('.admin-table th.sortable').forEach(h => {
+          h.querySelector('.sort-icon').textContent = '↕';
+          h.classList.remove('sort-active');
+        });
+        applyFilters();
+      });
+
+      // ── Load POIs ─────────────────────────────────────────
       async function loadPois() {
         try {
-          const res = await fetch('/admin/pois');
+          const res  = await fetch('/admin/pois');
           const data = await res.json();
           if (res.ok && data.status === 'success') {
-            renderTable(data.data || []);
+            allPois = data.data || [];
+            populateFilterDropdowns();
+            applyFilters();
           } else {
             alert(data.message || 'Failed to load POIs');
           }
@@ -137,9 +287,10 @@
         }
       }
 
+      // ── Load countries for the Add/Edit form ──────────────
       async function loadCountries() {
         try {
-          const res = await fetch('/api/poi/filters');
+          const res  = await fetch('/api/poi/filters');
           const data = await res.json();
           const preset = ['Brunei', 'Malaysia', 'Thailand', 'Singapore', 'Indonesia', 'Philippines'];
           const countries = Array.from(new Set([...(data.countries || []), ...preset]));
@@ -151,6 +302,7 @@
         } catch (e) { /* ignore */ }
       }
 
+      // ── Form submit (add / update) ────────────────────────
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('destinationId').value;
@@ -185,10 +337,12 @@
         }
       });
 
+      // ── Table action buttons (edit / delete) ──────────────
       tableBody.addEventListener('click', async (e) => {
         const btn = e.target.closest('button');
         if (!btn) return;
         const id = btn.getAttribute('data-id');
+
         if (btn.classList.contains('admin-delete-btn')) {
           if (!confirm('Delete this POI?')) return;
           try {
@@ -202,15 +356,18 @@
           } catch (err) {
             alert('Network error while deleting POI');
           }
+
         } else if (btn.classList.contains('admin-edit-btn')) {
-          const row = btn.closest('tr');
-          document.getElementById('destinationId').value = id;
-          document.getElementById('name').value         = row.children[0].textContent;
-          document.getElementById('category').value     = row.children[1].textContent;
-          document.getElementById('budget_level').value = row.children[2].textContent;
-          document.getElementById('travel_style').value = row.children[3].textContent;
-          document.getElementById('location').value     = row.children[4].textContent;
-          document.getElementById('country').value      = row.children[5].textContent;
+          const poi = allPois.find(p => String(p.id) === id);
+          if (!poi) return;
+          document.getElementById('destinationId').value = poi.id;
+          document.getElementById('name').value          = poi.name;
+          document.getElementById('category').value      = CATEGORY_REVERSE[poi.category] ?? poi.category;
+          document.getElementById('budget_level').value  = BUDGET_REVERSE[poi.budget_level]  ?? poi.budget_level;
+          document.getElementById('travel_style').value  = (poi.travel_style || '').toLowerCase();
+          document.getElementById('location').value      = poi.location;
+          document.getElementById('country').value       = poi.country || '';
+          document.getElementById('description').value   = poi.description || '';
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });

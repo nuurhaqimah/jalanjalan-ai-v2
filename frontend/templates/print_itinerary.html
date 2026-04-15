@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ trip.title }} — JalanJalan.AI</title>
+  <style>
+    /* ── Screen styles ────────────────────────────────── */
+    @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Patrick Hand', cursive;
+      background: #fdfbf7;
+      color: #2d2d2d;
+      padding: 0;
+    }
+
+    /* Print bar — hidden when printing */
+    .print-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ff6b35;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+      font-family: 'Kalam', cursive;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .print-bar span { opacity: 0.9; font-size: 0.9rem; }
+    .print-btn {
+      background: #fff;
+      color: #ff6b35;
+      border: 2px solid #fff;
+      border-radius: 8px;
+      padding: 7px 20px;
+      font-family: 'Kalam', cursive;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .print-btn:hover { background: #fff3ef; }
+
+    /* Document body */
+    .doc {
+      max-width: 760px;
+      margin: 36px auto 60px;
+      padding: 0 28px;
+    }
+
+    .doc-header {
+      border-bottom: 3px dashed #e5e0d8;
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+    }
+    .doc-logo {
+      font-family: 'Kalam', cursive;
+      font-size: 1.1rem;
+      color: #ff6b35;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+    .doc-title {
+      font-family: 'Kalam', cursive;
+      font-size: 2rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .doc-meta {
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    /* Day sections */
+    .day-block { margin-bottom: 28px; }
+    .day-label {
+      font-family: 'Kalam', cursive;
+      font-size: 1.3rem;
+      background: #fff9c4;
+      border: 2px solid #2d2d2d;
+      display: inline-block;
+      padding: 3px 16px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      box-shadow: 3px 3px 0 #2d2d2d;
+    }
+
+    .slot {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 0 16px;
+      padding: 10px 0;
+      border-bottom: 1px dashed #e5e0d8;
+    }
+    .slot:last-child { border-bottom: none; }
+
+    .slot-time {
+      font-family: 'Kalam', cursive;
+      font-size: 0.9rem;
+      color: #ff6b35;
+      padding-top: 2px;
+      white-space: nowrap;
+    }
+    .slot-body {}
+    .slot-title {
+      font-family: 'Kalam', cursive;
+      font-size: 1.05rem;
+      margin-bottom: 2px;
+    }
+    .slot-meta {
+      font-size: 0.85rem;
+      color: #888;
+    }
+    .slot-notes {
+      font-size: 0.88rem;
+      color: #555;
+      margin-top: 3px;
+    }
+
+    .doc-footer {
+      margin-top: 36px;
+      padding-top: 14px;
+      border-top: 2px dashed #e5e0d8;
+      font-size: 0.82rem;
+      color: #aaa;
+      text-align: center;
+    }
+
+    /* ── Print styles ─────────────────────────────────── */
+    @media print {
+      .print-bar  { display: none !important; }
+      body        { background: #fff; }
+      .doc        { margin: 0; padding: 20px; max-width: 100%; }
+      .day-block  { page-break-inside: avoid; }
+      .day-label  { box-shadow: none; }
+      .doc-title  { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar (screen only) -->
+  <div class="print-bar">
+    <span>JalanJalan.AI &nbsp;·&nbsp; {{ trip.title }}</span>
+    <button class="print-btn" onclick="window.print()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+      </svg>
+      Save as PDF
+    </button>
+  </div>
+
+  <div class="doc">
+
+    <!-- Header -->
+    <div class="doc-header">
+      <div class="doc-logo">✈ JalanJalan.AI</div>
+      <h1 class="doc-title">{{ trip.title }}</h1>
+      <div class="doc-meta">
+        {% if trip.description %}{{ trip.description }} &nbsp;·&nbsp; {% endif %}
+        Generated {{ trip.created_at }}
+      </div>
+    </div>
+
+    <!-- Schedule grouped by day -->
+    {% set schedule = trip.data.get('schedule', []) if trip.data else [] %}
+    {% if schedule %}
+      {% set ns = namespace(current_day=None) %}
+      {% for s in schedule %}
+        {% set day = s.get('day', '') %}
+        {% if day != ns.current_day %}
+          {% if ns.current_day is not none %}</div>{% endif %}
+          {% set ns.current_day = day %}
+          <div class="day-block">
+          <div class="day-label">{{ day }}</div>
+        {% endif %}
+        <div class="slot">
+          <div class="slot-time">{{ s.get('time', s.get('start','')) }}</div>
+          <div class="slot-body">
+            <div class="slot-title">{{ s.get('title', s.get('name','')) }}</div>
+            {% if s.get('location') or s.get('category') %}
+            <div class="slot-meta">
+              {% if s.get('category') %}{{ s.get('category') | capitalize }}{% endif %}
+              {% if s.get('location') %} — {{ s.get('location') }}{% endif %}
+            </div>
+            {% endif %}
+            {% if s.get('notes') or s.get('description') %}
+            <div class="slot-notes">{{ s.get('notes', s.get('description','')) }}</div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+      {% if ns.current_day is not none %}</div>{% endif %}
+    {% else %}
+      <p style="color:#888; font-style:italic;">No schedule details found for this trip.</p>
+    {% endif %}
+
+    <div class="doc-footer">
+      Generated by JalanJalan.AI &nbsp;·&nbsp; Your AI travel planner
+    </div>
+  </div>
+
+  <script>
+    // Auto-open print dialog after fonts load
+    window.addEventListener('load', () => setTimeout(() => window.print(), 600));
+  </script>
+</body>
+</html>

@@ -71,4 +71,80 @@ INSERT INTO poi (name, category, description, location, country, budget_level, t
 ('Jollibee', 'food', 'Iconic Filipino fast-food chain.', 'Nationwide', 'Philippines', 'low', 'cultural'),
 ('Mayon Volcano', 'nature', 'Perfect cone-shaped volcano with hiking opportunities.', 'Albay, Bicol', 'Philippines', 'medium', 'adventure'),
 ('Puerto Princesa Underground River', 'nature', 'Underground river cave system and UNESCO site.', 'Palawan', 'Philippines', 'medium', 'adventure'),
-('Magellan’s Cross', 'history', 'Historic Christian cross planted by explorers.', 'Cebu City', 'Philippines', 'low', 'cultural');
+(‘Magellan’’s Cross’, ‘history’, ‘Historic Christian cross planted by explorers.’, ‘Cebu City’, ‘Philippines’, ‘low’, ‘cultural’);
+
+-- ======================
+-- THAILAND — food expansion (was critically under-represented)
+-- ======================
+INSERT INTO poi (name, category, description, location, country, budget_level, travel_style) VALUES
+(‘Or Tor Kor Market’, ‘food’, ‘Premium fresh market with top-quality Thai produce and ready-to-eat dishes.’, ‘Bangkok’, ‘Thailand’, ‘medium’, ‘relaxing’),
+(‘Yaowarat Road (Chinatown)’, ‘food’, ‘Bangkok’’s lively Chinatown strip famous for dim sum, seafood, and street snacks.’, ‘Bangkok’, ‘Thailand’, ‘low’, ‘relaxing’),
+(‘Asiatique The Riverfront’, ‘food’, ‘Riverside night bazaar with diverse restaurants, craft beer, and Thai cuisine.’, ‘Bangkok’, ‘Thailand’, ‘medium’, ‘relaxing’),
+(‘Nimman Road Restaurants’, ‘food’, ‘Trendy Chiang Mai street lined with cafes, Thai fusion, and specialty coffee.’, ‘Chiang Mai’, ‘Thailand’, ‘medium’, ‘relaxing’),
+(‘Hua Hin Night Market’, ‘food’, ‘Relaxed seaside night market with fresh seafood and local Thai street food.’, ‘Hua Hin’, ‘Thailand’, ‘low’, ‘relaxing’),
+(‘Phuket Weekend Market (Naka)’, ‘food’, ‘Local favourite for grilled seafood, mango sticky rice, and Thai desserts.’, ‘Phuket’, ‘Thailand’, ‘low’, ‘relaxing’),
+(‘Chatuchak Weekend Market Food Court’, ‘food’, ‘Massive food section inside Thailand’’s largest market — try boat noodles and pad thai.’, ‘Bangkok’, ‘Thailand’, ‘low’, ‘adventure’),
+(‘Ratchada Train Night Market’, ‘food’, ‘Colourful photogenic night market with street food, clothes, and cocktails.’, ‘Bangkok’, ‘Thailand’, ‘low’, ‘adventure’),
+(‘Khao San Road Food Stalls’, ‘food’, ‘Backpacker hub with pad thai, mango sticky rice, and international bites.’, ‘Bangkok’, ‘Thailand’, ‘low’, ‘adventure’),
+(‘Chiang Mai Sunday Walking Street’, ‘food’, ‘Weekly street fair with northern Thai specialties like khao soi and sai oua sausage.’, ‘Chiang Mai’, ‘Thailand’, ‘low’, ‘cultural’),
+(‘Blue Elephant Restaurant’, ‘food’, ‘Upscale Thai royal cuisine in a beautifully restored colonial mansion.’, ‘Bangkok’, ‘Thailand’, ‘high’, ‘relaxing’),
+(‘Gaggan Anand’, ‘food’, ‘World-renowned progressive Indian-Thai restaurant, one of Asia’’s best.’, ‘Bangkok’, ‘Thailand’, ‘high’, ‘relaxing’);
+
+-- ======================
+-- MALAYSIA — food expansion
+-- ======================
+INSERT INTO poi (name, category, description, location, country, budget_level, travel_style) VALUES
+(‘Jalan Alor Food Street’, ‘food’, ‘Kuala Lumpur’’s most famous outdoor food street — bustling with hawker stalls at night.’, ‘Kuala Lumpur’, ‘Malaysia’, ‘low’, ‘relaxing’),
+(‘Penang Road Famous Teochew Chendul’, ‘food’, ‘Iconic dessert stall serving Malaysia’’s best chendul since 1936.’, ‘George Town’, ‘Malaysia’, ‘low’, ‘relaxing’),
+(‘Gurney Drive Hawker Centre’, ‘food’, ‘Penang’’s premier seafront hawker centre for char kway teow and assam laksa.’, ‘George Town’, ‘Malaysia’, ‘low’, ‘relaxing’),
+(‘Batu Ferringhi Night Market’, ‘food’, ‘Beachside night market with satay, grilled seafood, and fresh fruit.’, ‘Penang’, ‘Malaysia’, ‘low’, ‘relaxing’),
+(‘Madam Kwan’’s’, ‘food’, ‘Popular Malaysian restaurant known for nasi lemak and signature beef rendang.’, ‘Kuala Lumpur’, ‘Malaysia’, ‘medium’, ‘relaxing’),
+(‘Hutong Food Court KLCC’, ‘food’, ‘Air-conditioned hawker hall beneath the Petronas Towers with all Malaysian classics.’, ‘Kuala Lumpur’, ‘Malaysia’, ‘medium’, ‘relaxing’),
+(‘Yut Kee Kopitiam’, ‘food’, ‘Heritage coffeehouse serving Hainanese chicken chop and kaya toast since 1928.’, ‘Kuala Lumpur’, ‘Malaysia’, ‘low’, ‘cultural’),
+(‘Melaka Jonker Walk’, ‘food’, ‘Historic night market in UNESCO Melaka with Nyonya snacks and durian cendol.’, ‘Melaka’, ‘Malaysia’, ‘low’, ‘cultural’);
+
+-- ======================
+-- INDONESIA — food expansion
+-- ======================
+INSERT INTO poi (name, category, description, location, country, budget_level, travel_style) VALUES
+(‘Jalan Sabang Food Street’, ‘food’, ‘Central Jakarta street packed with warung stalls serving nasi goreng and soto.’, ‘Jakarta’, ‘Indonesia’, ‘low’, ‘relaxing’),
+(‘Seminyak Food Trail’, ‘food’, ‘Bali’’s hippest dining strip with beach clubs, warungs, and international cafes.’, ‘Bali’, ‘Indonesia’, ‘medium’, ‘relaxing’),
+(‘Pasar Badung’, ‘food’, ‘Bali’’s largest traditional market — taste fresh jamu, sate lilit, and Balinese rice dishes.’, ‘Denpasar, Bali’, ‘Indonesia’, ‘low’, ‘relaxing’),
+(‘Ubud Food Festival Area’, ‘food’, ‘Ubud’’s artisan food scene with organic cafes, cooking classes, and farm-to-table dining.’, ‘Ubud, Bali’, ‘Indonesia’, ‘medium’, ‘relaxing’),
+(‘Kota Tua Food Alley’, ‘food’, ‘Jakarta’’s Old Town neighbourhood with colonial-era bakeries and kerak telor vendors.’, ‘Jakarta’, ‘Indonesia’, ‘low’, ‘cultural’),
+(‘Nasi Padang Sederhana’, ‘food’, ‘Famous Padang restaurant chain serving West Sumatran rice with rich curries.’, ‘Jakarta’, ‘Indonesia’, ‘low’, ‘cultural’),
+(‘Locavore Restaurant’, ‘food’, ‘Award-winning Ubud fine dining showcasing hyper-local Balinese ingredients.’, ‘Ubud, Bali’, ‘Indonesia’, ‘high’, ‘relaxing’);
+
+-- ======================
+-- SINGAPORE — food expansion
+-- ======================
+INSERT INTO poi (name, category, description, location, country, budget_level, travel_style) VALUES
+(‘Maxwell Food Centre’, ‘food’, ‘Beloved hawker centre home to Tian Tian Hainanese chicken rice and popiah.’, ‘Chinatown’, ‘Singapore’, ‘low’, ‘relaxing’),
+(‘Lau Pa Sat Festival Market’, ‘food’, ‘Victorian cast-iron market turned hawker centre — famous for satay after 7 pm.’, ‘Singapore’, ‘Singapore’, ‘low’, ‘relaxing’),
+(‘Tiong Bahru Bakery’, ‘food’, ‘Iconic Singapore bakery with kouign-amann and specialty coffee in a heritage shophouse.’, ‘Tiong Bahru’, ‘Singapore’, ‘medium’, ‘relaxing’),
+(‘Candlenut Restaurant’, ‘food’, ‘World’’s first Michelin-starred Peranakan restaurant with heritage Nyonya recipes.’, ‘Singapore’, ‘Singapore’, ‘high’, ‘relaxing’),
+(‘Old Airport Road Food Centre’, ‘food’, ‘One of Singapore’’s oldest hawker centres with legendary char kway teow and rojak.’, ‘Singapore’, ‘Singapore’, ‘low’, ‘relaxing’),
+(‘Hawker Chan’, ‘food’, ‘World’’s cheapest Michelin-star meal — soya sauce chicken rice from $3.’, ‘Singapore’, ‘Singapore’, ‘low’, ‘relaxing’),
+(‘Dempsey Hill Restaurant Row’, ‘food’, ‘Lush colonial estate converted into upscale restaurants and wine bars.’, ‘Singapore’, ‘Singapore’, ‘high’, ‘relaxing’),
+(‘Tekka Centre’, ‘food’, ‘Little India’’s bustling wet market and hawker centre with roti prata and biryani.’, ‘Little India’, ‘Singapore’, ‘low’, ‘cultural’);
+
+-- ======================
+-- PHILIPPINES — food expansion
+-- ======================
+INSERT INTO poi (name, category, description, location, country, budget_level, travel_style) VALUES
+(‘Mercato Centrale BGC’, ‘food’, ‘Weekend night market in Bonifacio Global City with artisanal Filipino street food.’, ‘Taguig’, ‘Philippines’, ‘medium’, ‘relaxing’),
+(‘La Mesa Eco Park Picnic Grove’, ‘food’, ‘Lush picnic park where families bring home-cooked Filipino food and barbecue.’, ‘Caloocan’, ‘Philippines’, ‘low’, ‘relaxing’),
+(‘Lechon sa Cebu (Rico’’s Lechon)’, ‘food’, ‘Cebu’’s legendary slow-roasted pig — crispy skin and juicy meat, a must-eat.’, ‘Cebu City’, ‘Philippines’, ‘low’, ‘relaxing’),
+(‘Salcedo Saturday Market’, ‘food’, ‘Makati’’s premium weekend market with artisanal Filipino produce and street food.’, ‘Makati’, ‘Philippines’, ‘medium’, ‘relaxing’),
+(‘Larsian Barbecue’, ‘food’, ‘Cebu open-air grill market open late into the night — isaw, pork belly, and seafood.’, ‘Cebu City’, ‘Philippines’, ‘low’, ‘relaxing’),
+(‘Toyo Eatery’, ‘food’, ‘Manila’’s acclaimed modern Filipino restaurant championing local ingredients.’, ‘Makati’, ‘Philippines’, ‘high’, ‘relaxing’),
+(‘Dampa Seafood Market’, ‘food’, ‘Choose your fresh seafood and have it cooked to order at stalls around the market.’, ‘Pasay’, ‘Philippines’, ‘medium’, ‘relaxing’);
+
+-- ======================
+-- BRUNEI — food expansion
+-- ======================
+INSERT INTO poi (name, category, description, location, country, budget_level, travel_style) VALUES
+(‘Kianggeh Tamu Market’, ‘food’, ‘Morning market along the river selling fresh local produce and traditional Bruneian snacks.’, ‘Bandar Seri Begawan’, ‘Brunei’, ‘low’, ‘relaxing’),
+(‘Pasar Gadong Night Market’, ‘food’, ‘Popular evening market with ambuyat, soto, and Malay grilled meats.’, ‘Gadong’, ‘Brunei’, ‘low’, ‘relaxing’),
+(‘Seri Damai Restaurant’, ‘food’, ‘Waterfront restaurant serving traditional Bruneian seafood and rice dishes.’, ‘Bandar Seri Begawan’, ‘Brunei’, ‘medium’, ‘relaxing’),
+(‘Pondok Sari Wangi’, ‘food’, ‘Local favourite for nasi katok — Brunei’’s simple iconic rice-and-chicken dish.’, ‘Bandar Seri Begawan’, ‘Brunei’, ‘low’, ‘relaxing’);
