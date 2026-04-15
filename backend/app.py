@@ -960,35 +960,7 @@ def chat():
                 schedule_text += f"{current_day}:\n"
             schedule_text += f"- {item['time']}: {item['title']} ({item.get('category','')}) — {item.get('location','')}\n"
 
-        # Persist the itinerary automatically
-        try:
-            # Save to legacy table 'itineraries' (string user_id allowed; store schedule as JSON)
-            try:
-                legacy_user_id = str(session.get('user', {}).get('id')) if session.get('user') else str(user_id)
-            except Exception:
-                legacy_user_id = str(user_id)
-            db_query_db(
-                "INSERT INTO itineraries (user_id, data) VALUES (%s, %s)",
-                (legacy_user_id, json.dumps({"schedule": itinerary}))
-            )
-        except Exception as e:
-            # Do not block the chat response on legacy save errors
-            print(f"/chat: failed to save legacy itinerary: {e}")
-
-        # Also save to primary table 'itinerary' when a real user session exists
-        try:
-            sess_user = session.get('user')
-            if sess_user and sess_user.get('id') is not None:
-                title = f"{country or 'Trip'} Weekend Trip"
-                if budget:
-                    title = f"{title} ({budget.title()})"
-                description = f"Auto-generated itinerary for {country or 'your destination'}"
-                db_query_db(
-                    "INSERT INTO itinerary (user_id, title, description, data) VALUES (%s,%s,%s,%s)",
-                    (sess_user.get('id'), title, description, json.dumps({"schedule": itinerary}))
-                )
-        except Exception as e:
-            print(f"/chat: failed to save primary itinerary: {e}")
+        # Itinerary is NOT auto-saved — user must explicitly click "Save this itinerary"
 
         # Reset for next conversation; keep country as default
         conversation_state[str(user_id)] = {"country": state.get("country"), "budget": None, "interests": [], "travel_style": None, "location": None}

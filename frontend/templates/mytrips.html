@@ -80,33 +80,38 @@
       });
 
       // Delete trip
-      document.addEventListener('click', async (e) => {
+      document.addEventListener('click', (e) => {
         const btn = e.target.closest('.delete-btn');
         if (!btn) return;
         const id = btn.getAttribute('data-id');
         if (!id) return;
-        if (!confirm('Delete this trip?')) return;
-        try {
-          const res = await fetch(`/mytrips/${id}/delete`, { method: 'DELETE' });
-          const data = await res.json();
-          if (res.ok && data.status === 'success') {
-            const card = document.querySelector(`.trip-card[data-id="${id}"]`);
-            if (card) card.remove();
-            if (!document.querySelector('.trip-card')) {
-              const root = document.getElementById('trips-root');
-              root.innerHTML = `
-                <div class="empty-container" id="empty-msg">
-                  <h2>It seems like you have no trips...</h2>
-                  <a href="/trip" class="center-btn">Plan my trip ➝</a>
-                </div>`;
+
+        jjConfirm(
+          { title: 'Delete trip?', message: 'This trip will be permanently deleted and cannot be recovered.', confirmText: 'Yes, delete', danger: true, icon: '🗑️' },
+          async () => {
+            try {
+              const res  = await fetch(`/mytrips/${id}/delete`, { method: 'DELETE' });
+              const data = await res.json();
+              if (res.ok && data.status === 'success') {
+                const card = document.querySelector(`.trip-card[data-id="${id}"]`);
+                if (card) card.remove();
+                if (!document.querySelector('.trip-card')) {
+                  document.getElementById('trips-root').innerHTML = `
+                    <div class="empty-container" id="empty-msg">
+                      <h2>It seems like you have no trips...</h2>
+                      <a href="/trip" class="center-btn">Plan my trip ➝</a>
+                    </div>`;
+                }
+              } else {
+                jjAlert({ title: 'Could not delete', message: data.message || 'Failed to delete the trip.', icon: '⚠️' });
+              }
+            } catch (err) {
+              jjAlert({ title: 'Network error', message: 'Something went wrong. Please try again.', icon: '⚠️' });
             }
-          } else {
-            alert(data.message || 'Failed to delete');
           }
-        } catch (e) {
-          alert('Network error');
-        }
+        );
       });
     </script>
+    <script src="{{ url_for('static', filename='modal.js') }}"></script>
   </body>
 </html>

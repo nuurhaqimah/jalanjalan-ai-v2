@@ -280,10 +280,10 @@
             populateFilterDropdowns();
             applyFilters();
           } else {
-            alert(data.message || 'Failed to load POIs');
+            jjAlert({ title: 'Load failed', message: data.message || 'Failed to load destinations.', icon: '⚠️' });
           }
         } catch (e) {
-          alert('Network error while loading POIs');
+          jjAlert({ title: 'Network error', message: 'Could not connect to the server. Please refresh.', icon: '⚠️' });
         }
       }
 
@@ -328,34 +328,38 @@
             form.reset();
             document.getElementById('destinationId').value = '';
             loadPois();
-            if (data.message) alert(data.message);
+            if (data.message) jjAlert({ title: 'Saved!', message: data.message, icon: '✅' });
           } else {
-            alert(data.message || 'Operation failed');
+            jjAlert({ title: 'Save failed', message: data.message || 'Operation failed.', icon: '⚠️' });
           }
         } catch (err) {
-          alert('Network error while saving POI');
+          jjAlert({ title: 'Network error', message: 'Could not save. Please try again.', icon: '⚠️' });
         }
       });
 
       // ── Table action buttons (edit / delete) ──────────────
-      tableBody.addEventListener('click', async (e) => {
+      tableBody.addEventListener('click', (e) => {
         const btn = e.target.closest('button');
         if (!btn) return;
         const id = btn.getAttribute('data-id');
 
         if (btn.classList.contains('admin-delete-btn')) {
-          if (!confirm('Delete this POI?')) return;
-          try {
-            const res  = await fetch(`/admin/poi/${id}`, { method: 'DELETE' });
-            const data = await res.json();
-            if (res.ok && data.status === 'success') {
-              loadPois();
-            } else {
-              alert(data.message || 'Failed to delete');
+          jjConfirm(
+            { title: 'Delete destination?', message: 'This POI will be permanently removed from the database.', confirmText: 'Yes, delete', danger: true, icon: '🗑️' },
+            async () => {
+              try {
+                const res  = await fetch(`/admin/poi/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                  loadPois();
+                } else {
+                  jjAlert({ title: 'Delete failed', message: data.message || 'Failed to delete.', icon: '⚠️' });
+                }
+              } catch (err) {
+                jjAlert({ title: 'Network error', message: 'Could not delete. Please try again.', icon: '⚠️' });
+              }
             }
-          } catch (err) {
-            alert('Network error while deleting POI');
-          }
+          );
 
         } else if (btn.classList.contains('admin-edit-btn')) {
           const poi = allPois.find(p => String(p.id) === id);
@@ -375,5 +379,6 @@
       loadCountries();
       loadPois();
     </script>
+    <script src="{{ url_for('static', filename='modal.js') }}"></script>
   </body>
 </html>

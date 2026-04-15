@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -11,10 +11,13 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   </head>
-  <body>
+  <body class="trip-page">
     <nav class="main-navbar">
       <div class="logo">
-        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="Logo" />
+        <img
+          src="{{ url_for('static', filename='assets/logo.png') }}"
+          alt="Logo"
+        />
         <a href="{{ url_for('index') }}" class="no-underline">JalanJalan.AI</a>
       </div>
       <ul class="nav-links">
@@ -24,23 +27,39 @@
       </ul>
       <div class="nav-actions">
         {% if session.get('user') %}
-          <div class="user-profile">
-            <button class="profile-btn" title="{{ session.get('user').get('name','User') }}">
-              <span class="user-avatar-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="8" r="4"/>
-                  <path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
-                </svg>
-              </span>
-              <span class="user-name">{{ session.get('user').get('name','User') }}</span>
-            </button>
-            <div class="dropdown-menu">
-              <a href="{{ url_for('mytrips') }}">My Trips</a>
-              <a href="{{ url_for('user_logout') }}">Logout</a>
-            </div>
+        <div class="user-profile">
+          <button
+            class="profile-btn"
+            title="{{ session.get('user').get('name','User') }}"
+          >
+            <span class="user-avatar-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" />
+              </svg>
+            </span>
+            <span class="user-name"
+              >{{ session.get('user').get('name','User') }}</span
+            >
+          </button>
+          <div class="dropdown-menu">
+            <a href="{{ url_for('mytrips') }}">My Trips</a>
+            <a href="{{ url_for('user_logout') }}">Logout</a>
           </div>
+        </div>
         {% else %}
-          <a href="{{ url_for('user_login') }}" class="get-started-btn">Get started</a>
+        <a href="{{ url_for('user_login') }}" class="get-started-btn"
+          >Get started</a
+        >
         {% endif %}
       </div>
     </nav>
@@ -49,7 +68,11 @@
       <!-- Hero header -->
       <section class="trip-hero">
         <h1>Start planning your <span>trip.</span></h1>
-        <p>Skip the stress of travel planning. Our AI-powered itinerary planner creates personalized weekend getaways tailored to your interests, budget, and time — so you can explore more and worry less.</p>
+        <p>
+          Skip the stress of travel planning. Our AI-powered itinerary planner
+          creates personalized weekend getaways tailored to your interests,
+          budget, and time — so you can explore more and worry less.
+        </p>
       </section>
 
       <!-- Chat area -->
@@ -57,21 +80,52 @@
         <div class="chat-card">
           <div id="chatBox" class="chat-box">
             <div class="chat-message bot">
-              Hi! I’m JalanJalan.AI, your travel assistant. Tell me where you’d like to go and what kind of weekend you’re dreaming of, and I’ll plan it for you.
+              Hi! I’m JalanJalan.AI, your travel assistant. Tell me where you’d
+              like to go and what kind of weekend you’re dreaming of, and I’ll
+              plan it for you.
             </div>
+            <div id="quickOptions" class="chip-row" style="display: none"></div>
           </div>
-          <!-- Quick options (chips) injected from /chat responses -->
-          <div id="quickOptions" class="chip-row" style="display:none;"></div>
           <!-- Save itinerary button (hidden until an itinerary is produced) -->
-          <div style="display:flex; justify-content:flex-end; margin: 8px 6px 10px;">
-            <button id="saveItineraryBtn" class="cta-btn" style="display:none;">Save this itinerary</button>
+          <div
+            style="
+              display: flex;
+              justify-content: flex-end;
+              margin: 8px 6px 10px;
+            "
+          >
+            <button id="saveItineraryBtn" class="cta-btn" style="display: none">
+              Save this itinerary
+            </button>
           </div>
           <div class="chat-input-bar">
-            <input type="text" id="chatInput" placeholder="Start typing here..."/>
+            <input
+              type="text"
+              id="chatInput"
+              placeholder="Start typing here..."
+            />
             <button id="sendChatBtn" class="send-btn" aria-label="Send">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M22 2L11 13"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M22 2L15 22L11 13L2 9L22 2Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
             </button>
           </div>
@@ -81,83 +135,91 @@
 
     <script>
       // Toggle dropdown in navbar
-      document.addEventListener('DOMContentLoaded', function(){
-        const userProfile = document.querySelector('.user-profile');
+      document.addEventListener("DOMContentLoaded", function () {
+        const userProfile = document.querySelector(".user-profile");
         if (userProfile) {
-          const profileBtn = userProfile.querySelector('.profile-btn');
-          profileBtn.addEventListener('click', function(e){
+          const profileBtn = userProfile.querySelector(".profile-btn");
+          profileBtn.addEventListener("click", function (e) {
             e.stopPropagation();
-            userProfile.classList.toggle('open');
+            userProfile.classList.toggle("open");
           });
-          document.addEventListener('click', function(e){
-            if (!userProfile.contains(e.target)) userProfile.classList.remove('open');
+          document.addEventListener("click", function (e) {
+            if (!userProfile.contains(e.target))
+              userProfile.classList.remove("open");
           });
         }
       });
 
-      const chatBox = document.getElementById('chatBox');
-      const input = document.getElementById('chatInput');
-      const sendBtn = document.getElementById('sendChatBtn');
-      const quickOptions = document.getElementById('quickOptions');
-      const saveBtn = document.getElementById('saveItineraryBtn');
+      const chatBox = document.getElementById("chatBox");
+      const input = document.getElementById("chatInput");
+      const sendBtn = document.getElementById("sendChatBtn");
+      const quickOptions = document.getElementById("quickOptions");
+      const saveBtn = document.getElementById("saveItineraryBtn");
       let lastItinerary = null;
-      let typingEl = null;   // single reference — no duplicate IDs
       let isSending = false; // prevent overlapping requests
-      let isInterestStep    = false;
+      let isInterestStep = false;
       let selectedInterests = [];
+      let itineraryGenerated = false; // true once an itinerary is rendered
+      let itinerarySaved = false; // true once user explicitly saves
 
       // ── Toast helper ──────────────────────────────────────
       let toastTimer = null;
       function showToast(msg) {
-        let toast = document.getElementById('chatToast');
+        let toast = document.getElementById("chatToast");
         if (!toast) {
-          toast = document.createElement('div');
-          toast.id = 'chatToast';
-          toast.className = 'chat-toast';
-          document.querySelector('.chat-card').appendChild(toast);
+          toast = document.createElement("div");
+          toast.id = "chatToast";
+          toast.className = "chat-toast";
+          document.querySelector(".chat-card").appendChild(toast);
         }
         toast.textContent = msg;
-        toast.classList.add('show');
+        toast.classList.add("show");
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 3000);
       }
 
       // --- Disable send button when input is empty ---
       function updateSendBtn() {
-        sendBtn.disabled = input.value.trim() === '' || isSending;
+        sendBtn.disabled = input.value.trim() === "" || isSending;
       }
-      input.addEventListener('input', updateSendBtn);
+      input.addEventListener("input", updateSendBtn);
       updateSendBtn();
 
       function renderOptions(options, next) {
-        isInterestStep    = (next === 'interests');
+        isInterestStep = next === "interests";
         selectedInterests = [];
 
         if (!Array.isArray(options) || options.length === 0) {
-          quickOptions.style.display = 'none';
-          quickOptions.innerHTML = '';
+          quickOptions.style.display = "none";
+          quickOptions.innerHTML = "";
           return;
         }
 
         if (isInterestStep) {
           // ── Multi-select chips ──────────────────────────────
-          const chips = options.map(opt => {
-            const label = typeof opt === 'string' ? opt : (opt.label || opt.value || '');
-            const value = typeof opt === 'string' ? opt : (opt.value || opt.label || '');
-            return `<button class="chip interest-chip" data-value="${value}">${label}</button>`;
-          }).join('');
+          const chips = options
+            .map((opt, i) => {
+              const label =
+                typeof opt === "string" ? opt : opt.label || opt.value || "";
+              const value =
+                typeof opt === "string" ? opt : opt.value || opt.label || "";
+              return `<button class="chip interest-chip" data-value="${value}" style="animation-delay:${i * 0.06}s">${label}</button>`;
+            })
+            .join("");
+          const confirmDelay = options.length * 0.06;
 
-          quickOptions.innerHTML = chips + `
-            <div class="interest-confirm-bar">
+          quickOptions.innerHTML =
+            chips +
+            `
+            <div class="interest-confirm-bar" style="animation-delay:${confirmDelay}s">
               <span class="interest-hint" id="interestHint">Pick at least 1 interest to continue</span>
               <button class="chip chip-done chip-done-inactive" id="interestDoneBtn">That's it →</button>
             </div>`;
-          quickOptions.style.display = '';
+          quickOptions.style.display = "";
 
           // Scroll so the confirm bar is visible after chips render
           setTimeout(() => {
-            const confirmBar = document.getElementById('interestDoneBtn');
-            if (confirmBar) confirmBar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            scrollToBottom();
           }, 80);
 
           function refreshChipStates() {
@@ -165,130 +227,161 @@
             const atMax = count >= 2;
 
             // Dim unselected chips when at max
-            quickOptions.querySelectorAll('.interest-chip').forEach(c => {
-              if (!c.classList.contains('selected')) {
-                c.style.opacity       = atMax ? '0.35' : '1';
-                c.style.pointerEvents = atMax ? 'none'  : '';
+            quickOptions.querySelectorAll(".interest-chip").forEach((c) => {
+              if (!c.classList.contains("selected")) {
+                c.style.opacity = atMax ? "0.35" : "1";
+                c.style.pointerEvents = atMax ? "none" : "";
               }
             });
 
             // Hint text
-            const hint = document.getElementById('interestHint');
-            if (hint) hint.textContent = count === 0
-              ? 'Pick at least 1 interest to continue'
-              : count === 1
-                ? '1 selected — confirm or pick one more'
-                : '2 selected — ready to go!';
+            const hint = document.getElementById("interestHint");
+            if (hint)
+              hint.textContent =
+                count === 0
+                  ? "Pick at least 1 interest to continue"
+                  : count === 1
+                    ? "1 selected — confirm or pick one more"
+                    : "2 selected — ready to go!";
 
             // Toggle done button active/inactive style
-            const doneBtn = document.getElementById('interestDoneBtn');
+            const doneBtn = document.getElementById("interestDoneBtn");
             if (doneBtn) {
-              doneBtn.classList.toggle('chip-done-inactive', count === 0);
-              doneBtn.classList.toggle('chip-done-ready',    count > 0);
+              doneBtn.classList.toggle("chip-done-inactive", count === 0);
+              doneBtn.classList.toggle("chip-done-ready", count > 0);
             }
           }
 
-          quickOptions.querySelectorAll('.interest-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
+          quickOptions.querySelectorAll(".interest-chip").forEach((chip) => {
+            chip.addEventListener("click", () => {
               const val = chip.dataset.value;
-              if (chip.classList.contains('selected')) {
-                chip.classList.remove('selected');
-                selectedInterests = selectedInterests.filter(v => v !== val);
+              if (chip.classList.contains("selected")) {
+                chip.classList.remove("selected");
+                selectedInterests = selectedInterests.filter((v) => v !== val);
               } else {
                 if (selectedInterests.length >= 2) return;
-                chip.classList.add('selected');
+                chip.classList.add("selected");
                 selectedInterests.push(val);
               }
               refreshChipStates();
             });
           });
 
-          document.getElementById('interestDoneBtn').addEventListener('click', () => {
-            if (!selectedInterests.length) {
-              showToast('Please select at least one interest to continue!');
-              return;
-            }
-            const display = selectedInterests.join(' and ');
-            sendMessage(display, { interests: selectedInterests });
-          });
-
+          document
+            .getElementById("interestDoneBtn")
+            .addEventListener("click", () => {
+              if (!selectedInterests.length) {
+                showToast("Please select at least one interest to continue!");
+                return;
+              }
+              const display = selectedInterests.join(" and ");
+              sendMessage(display, { interests: selectedInterests });
+            });
         } else {
           // ── Normal single-select chips ──────────────────────
-          quickOptions.innerHTML = options.map(opt => {
-            const label = typeof opt === 'string' ? opt : (opt.label || opt.value || '');
-            const value = typeof opt === 'string' ? opt : (opt.value || opt.label || '');
-            return `<button class="chip" data-value="${value}">${label}</button>`;
-          }).join('');
-          quickOptions.style.display = '';
+          quickOptions.innerHTML = options
+            .map((opt, i) => {
+              const label =
+                typeof opt === "string" ? opt : opt.label || opt.value || "";
+              const value =
+                typeof opt === "string" ? opt : opt.value || opt.label || "";
+              return `<button class="chip" data-value="${value}" style="animation-delay:${i * 0.06}s">${label}</button>`;
+            })
+            .join("");
+          quickOptions.style.display = "";
+          scrollToBottom();
         }
       }
 
-      function appendMessage(text, who='user'){
+      // Smooth scroll inside chat container only (no page teleport)
+      function scrollToBottom(forceInstant = false) {
+        requestAnimationFrame(() => {
+          const targetTop = Math.max(
+            chatBox.scrollHeight - chatBox.clientHeight,
+            0,
+          );
+          if (forceInstant) {
+            chatBox.scrollTop = targetTop;
+            return;
+          }
+          chatBox.scrollTo({ top: targetTop, behavior: "smooth" });
+        });
+      }
+
+      function appendMessage(text, who = "user") {
         if (!text) return;
-        const div = document.createElement('div');
+        const div = document.createElement("div");
         div.className = `chat-message ${who}`;
-        div.textContent = text;
-        chatBox.appendChild(div);
-        chatBox.scrollTop = chatBox.scrollHeight;
+        if (who === "bot") {
+          const span = document.createElement("span");
+          span.className = "msg-text";
+          span.textContent = text;
+          div.appendChild(span);
+        } else {
+          div.textContent = text;
+        }
+        chatBox.insertBefore(div, quickOptions);
+        scrollToBottom();
       }
 
-      function showTyping(){
-        if (typingEl) typingEl.remove();
-        typingEl = document.createElement('div');
-        typingEl.className = 'chat-message bot typing-indicator';
-        typingEl.textContent = 'JalanJalan.AI is typing…';
-        chatBox.appendChild(typingEl);
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }
-      function hideTyping(){
-        if (typingEl) { typingEl.remove(); typingEl = null; }
-      }
-
-      function renderItinerary(items){
+      function renderItinerary(items) {
         if (!Array.isArray(items) || !items.length) return;
         lastItinerary = items;
-        const wrapper = document.createElement('div');
-        wrapper.className = 'chat-message bot';
+        const wrapper = document.createElement("div");
+        wrapper.className = "chat-message bot";
         const lines = [];
-        let day = '';
-        items.forEach(it=>{
-          if (it.day !== day){
-            day = it.day; lines.push(`\n${day}:`);
+        let day = "";
+        items.forEach((it) => {
+          if (it.day !== day) {
+            day = it.day;
+            lines.push(`\n${day}:`);
           }
-          lines.push(`- ${it.time}: ${it.title} (${it.category || ''}) — ${it.location || ''}`);
+          lines.push(
+            `- ${it.time}: ${it.title} (${it.category || ""}) — ${it.location || ""}`,
+          );
         });
-        wrapper.textContent = lines.join('\n');
-        chatBox.appendChild(wrapper);
-        chatBox.scrollTop = chatBox.scrollHeight;
-        saveBtn.style.display = '';
+        const inner = document.createElement("span");
+        inner.className = "msg-text";
+        inner.textContent = lines.join("\n");
+        wrapper.appendChild(inner);
+        chatBox.insertBefore(wrapper, quickOptions);
+        scrollToBottom();
+        saveBtn.style.display = "";
+        itineraryGenerated = true;
+        itinerarySaved = false;
         // Restart wiggle each time an itinerary is rendered
-        saveBtn.classList.remove('btn-wiggle');
+        saveBtn.classList.remove("btn-wiggle");
         void saveBtn.offsetWidth; // force reflow so animation restarts cleanly
-        saveBtn.classList.add('btn-wiggle');
+        saveBtn.classList.add("btn-wiggle");
       }
 
-      async function sendMessage(forcedText, forcedPrefs){
-        const text = (typeof forcedText === 'string' ? forcedText : input.value).trim();
+      async function sendMessage(forcedText, forcedPrefs) {
+        const text = (
+          typeof forcedText === "string" ? forcedText : input.value
+        ).trim();
         if (!text || isSending) return;
         // Show a friendly label in chat when multiple interests selected
-        const displayText = (forcedPrefs && forcedPrefs.interests && forcedPrefs.interests.length > 1)
-          ? forcedPrefs.interests.join(' & ')
-          : text;
-        appendMessage(displayText, 'user');
-        input.value = '';
+        const displayText =
+          forcedPrefs &&
+          forcedPrefs.interests &&
+          forcedPrefs.interests.length > 1
+            ? forcedPrefs.interests.join(" & ")
+            : text;
+        appendMessage(displayText, "user");
+        input.value = "";
         isSending = true;
+        itineraryGenerated = true; // guard activates the moment user is engaged in chat
         isInterestStep = false;
         updateSendBtn();
-        quickOptions.style.display = 'none';
-        quickOptions.innerHTML = '';
-        showTyping();
+        quickOptions.style.display = "none";
+        quickOptions.innerHTML = "";
         try {
           const body = { message: text };
           if (forcedPrefs) body.prefs = forcedPrefs;
-          const res = await fetch('/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
+          const res = await fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
           });
           if (!res.ok) throw new Error(`Server error ${res.status}`);
           const data = await res.json();
@@ -296,57 +389,114 @@
             // When an itinerary is also returned, only show the intro sentence
             // to avoid duplicating the schedule that renderItinerary will display.
             const replyText = data.itinerary
-              ? data.reply.split('\n\n')[0]
+              ? data.reply.split("\n\n")[0]
               : data.reply;
-            appendMessage(replyText, 'bot');
+            appendMessage(replyText, "bot");
           }
           renderOptions(data.options || [], data.next);
           if (data.itinerary) renderItinerary(data.itinerary);
         } catch (e) {
-          appendMessage('Something went wrong. Please try again.', 'bot');
+          appendMessage("Something went wrong. Please try again.", "bot");
         } finally {
-          hideTyping();
           isSending = false;
           updateSendBtn();
         }
       }
 
       // Fix: arrow wrapper so the click Event object is NOT passed as forcedText
-      sendBtn.addEventListener('click', () => sendMessage());
-      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }});
-      quickOptions.addEventListener('click', (e) => {
+      sendBtn.addEventListener("click", () => sendMessage());
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      quickOptions.addEventListener("click", (e) => {
         if (isInterestStep) return; // handled per-chip inside renderOptions
-        const chip = e.target.closest('.chip');
+        const chip = e.target.closest(".chip");
         if (!chip) return;
         sendMessage(chip.dataset.value);
       });
       // Kick off the guided flow so the bot asks for country on load
-      window.addEventListener('load', () => {
-        setTimeout(() => sendMessage('start'), 200);
+      window.addEventListener("load", () => {
+        setTimeout(() => sendMessage("start"), 200);
       });
 
-      // Save itinerary to backend (legacy 'itineraries' table)
-      saveBtn.addEventListener('click', async ()=>{
+      // Save itinerary explicitly (only on user click)
+      saveBtn.addEventListener("click", async () => {
         if (!lastItinerary || !lastItinerary.length) return;
         try {
           saveBtn.disabled = true;
-          const res = await fetch('/itineraries/legacy', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data: { schedule: lastItinerary } })
+          // Build a title from the first item's context if available
+          const firstItem = lastItinerary[0] || {};
+          const country = firstItem.location
+            ? firstItem.location.split(",").pop().trim()
+            : "Trip";
+          const title = `${country} Weekend Trip`;
+          const description = `Itinerary for ${country}`;
+          const res = await fetch("/mytrips/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title,
+              description,
+              data: { schedule: lastItinerary },
+            }),
           });
           const data = await res.json();
-          if (res.ok && data.status === 'success'){
-            window.location.href = '/mytrips';
+          if (res.ok && data.status === "success") {
+            itinerarySaved = true;
+            window.location.href = "/mytrips";
           } else {
-            appendMessage(data.message || 'Failed to save itinerary.', 'bot');
+            appendMessage(data.message || "Failed to save itinerary.", "bot");
           }
-        } catch (e){
-          appendMessage('Network error while saving. Please try again later.', 'bot');
+        } catch (e) {
+          appendMessage(
+            "Network error while saving. Please try again later.",
+            "bot",
+          );
         } finally {
           saveBtn.disabled = false;
         }
       });
+
+      // ── Exit guard ────────────────────────────────────────
+      // beforeunload: browser's own "Leave site?" dialog — only option for
+      // refresh / browser back / tab close (custom modals are blocked by browsers here)
+      window.addEventListener("beforeunload", (e) => {
+        if (itineraryGenerated && !itinerarySaved) {
+          e.preventDefault();
+          e.returnValue = ""; // required for Chrome
+        }
+      });
+
+      // Custom jjConfirm modal: intercepts in-page link clicks
+      // (covers navbar, logo, and any <a href> while planning is in progress)
+      document.addEventListener("click", (e) => {
+        const link = e.target.closest("a[href]");
+        if (!link) return;
+        if (!itineraryGenerated || itinerarySaved) return;
+        const href = link.getAttribute("href");
+        if (!href || href === "#" || href.startsWith("javascript:")) return;
+        e.preventDefault();
+        e.stopPropagation();
+        jjConfirm(
+          {
+            title: "Leave without saving?",
+            message:
+              "Your itinerary will be lost if you leave now. Make sure to save it before going!",
+            confirmText: "Leave anyway",
+            cancelText: "Stay & save",
+            danger: true,
+            icon: "⚠️",
+          },
+          () => {
+            itineraryGenerated = false; // disarm guard so redirect isn't re-intercepted
+            window.location.href = link.href;
+          },
+        );
+      });
     </script>
+    <script src="{{ url_for('static', filename='modal.js') }}"></script>
   </body>
 </html>

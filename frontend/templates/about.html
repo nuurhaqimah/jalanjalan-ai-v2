@@ -27,28 +27,40 @@
         50%       { transform: translateY(-20px) translateX(15px); }
       }
 
-      /* === Highlight underline image === */
+      /* === Highlight underline SVG === */
       h1 .highlight {
         position: relative;
         display: inline-block;
         z-index: 1;
       }
-      h1 .highlight::after {
-        content: "";
+      /* Animated SVG underline */
+      .highlight-svg {
         position: absolute;
-        left: 0;
-        width: 100%;
+        left: -6%;
+        bottom: -0.28em;
+        width: 112%;
         height: 0.55em;
-        bottom: -0.08em;
-        background: url("{{ url_for('static', filename='assets/underline.png') }}") no-repeat left bottom;
-        background-size: 100% 100%;
-        z-index: -1;
+        overflow: visible;
         pointer-events: none;
+      }
+      .highlight-svg path {
+        stroke-dasharray: 260;
+        stroke-dashoffset: 260;
+      }
+      /* Draw-on triggers when the heading fades in */
+      .fade-in.visible .highlight-svg path {
+        stroke-dashoffset: 0;
+        transition: stroke-dashoffset 0.85s cubic-bezier(0.4, 0, 0.2, 1) 0.45s;
       }
 
       /* === Fade-in Animation === */
-      .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
+      .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
       .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+      /* Stagger each element inside the about card */
+      .about-container h1.fade-in       { transition-delay: 0s; }
+      .about-container .subheading.fade-in { transition-delay: 0.22s; }
+      .about-container p.fade-in        { transition-delay: 0.42s; }
     </style>
   </head>
   <body>
@@ -95,9 +107,16 @@
     <div class="blob blob3"></div>
 
     <!-- About Section -->
+    <section class="about-section">
     <div class="about-container">
       <h1 class="fade-in">
-        Your <span class="highlight">ultimate</span> AI-powered travel companion
+        Your <span class="highlight">ultimate
+          <svg class="highlight-svg" viewBox="0 0 260 16" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M3,12 C30,7 75,4 130,7 C170,9 215,8 257,6"
+                  stroke="#ff6b35" stroke-width="4.5" fill="none"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span> AI-powered travel companion
       </h1>
       <div class="subheading fade-in">
         Smart, personalized itineraries designed to help you explore
@@ -110,6 +129,7 @@
         unforgettable.
       </p>
     </div>
+    </section>
 
     <script>
       // Dropdown toggle for user-profile navbar
