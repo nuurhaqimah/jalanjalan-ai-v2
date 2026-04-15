@@ -1,6 +1,6 @@
 # JalanJalan.AI
 
-An AI-powered travel planner that generates personalised day-by-day itineraries through a chatbot interface, complete with images, accommodation suggestions, and flight search.
+An AI-powered travel planner that generates personalised weekend itineraries through a chatbot interface, complete with images, accommodation suggestions, and flight search.
 
 ## Project Structure
 
