@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Account • JalanJalan.AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <main class="login-page">
+      <section class="login-card" role="region" aria-labelledby="loginTitle">
+        <div class="login-header">
+          <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="JalanJalan.AI logo" />
+          <h1 id="loginTitle" class="login-title">Create Account</h1>
+        </div>
+        <p class="login-subtitle">Sign up to save and plan your trips.</p>
+
+        {% if error %}
+          <div class="error-alert" role="alert">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="/user/signup" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="username">Username</label>
+            <input id="username" class="form-input" type="text" name="username" placeholder="Choose a username" autocomplete="username" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email (optional)</label>
+            <input id="email" class="form-input" type="email" name="email" placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="password">Password</label>
+              <input id="password" class="form-input" type="password" name="password" placeholder="Create a password" autocomplete="new-password" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="confirm">Confirm</label>
+              <input id="confirm" class="form-input" type="password" name="confirm" placeholder="Repeat password" autocomplete="new-password" required />
+            </div>
+          </div>
+          <button type="submit" class="submit-btn" aria-label="Create account">Create Account</button>
+        </form>
+
+        <div class="login-footer">
+          <a href="{{ url_for('user_login') }}" class="back-link">Already have an account? Sign in →</a>
+          <span>JalanJalan.AI</span>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,75 @@
+# ── Python ──────────────────────────────────────
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# ── Virtual environments ─────────────────────────
+venv/
+.venv/
+env/
+.env_dir/
+ENV/
+backend/venv/
+
+# ── Environment / secrets ────────────────────────
+.env
+.env.local
+.env.*.local
+# (keep .env.example so others know what vars are needed)
+
+# ── Distribution / packaging ─────────────────────
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+
+# ── Testing & coverage ───────────────────────────
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+nosetests.xml
+
+# ── Type checking / linting ──────────────────────
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+
+# ── Jupyter ──────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Database files ───────────────────────────────
+*.sqlite3
+*.db
+
+# ── OS generated ─────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ── Claude Code ──────────────────────────────────
+.claude/
+
+# ── Editor / IDE ─────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# ── Logs ─────────────────────────────────────────
+*.log
+logs/
