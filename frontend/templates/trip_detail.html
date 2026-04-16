@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ trip.title }} • JalanJalan.AI</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <style>
+      .maps-link { font-size: 0.8rem; color: #1a73e8; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; }
+      .maps-link:hover { text-decoration: underline; }
+    </style>
   </head>
   <body>
     <nav class="main-navbar">
@@ -67,6 +71,15 @@
           {% endif %}
           {% if s.get('image') %}
           <div style="margin-top:8px;"><img src="{{ s.get('image') }}" alt="" style="max-width:100%; border-radius:10px;"/></div>
+          {% endif %}
+          {% set place_name = s.get('name', s.get('title','')) %}
+          {% if place_name %}
+          {% set q = (place_name ~ (', ' ~ s.get('location','') if s.get('location') else '') ~ (', ' ~ s.get('country','') if s.get('country') else '')) | replace(' ', '+') %}
+          <div style="margin-top:6px;">
+            <a href="https://www.google.com/maps/search/?api=1&query={{ q }}" target="_blank" rel="noopener noreferrer" class="maps-link">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>View on Google Maps
+            </a>
+          </div>
           {% endif %}
         </div>
         {% endfor %}

@@ -221,6 +221,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderItinerary(itinerary) {
     let html = "<h2>Your Itinerary</h2>";
     itinerary.forEach(item => {
+      const queryParts = [item.title, item.location, item.country].filter(Boolean);
+      const mapsQuery = encodeURIComponent(queryParts.join(", "));
+      const mapsLink = item.title
+        ? `<a href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noopener noreferrer" style="font-size:0.78rem;color:#1a73e8;text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:4px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>View on Google Maps
+           </a>`
+        : "";
       html += `
         <div class="activity-card">
           <div class="activity-info">
@@ -228,6 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <h3>${item.title || "Activity"}</h3>
             <p>${item.poi_name || ""}</p>
             <p>${item.description || ""}</p>
+            ${mapsLink}
           </div>
         </div>
       `;

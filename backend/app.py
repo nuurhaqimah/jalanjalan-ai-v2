@@ -948,6 +948,7 @@ def chat():
                         "time": f"{tb[0]:02d}:00 - {tb[1]:02d}:00",
                         "title": poi["name"],
                         "location": poi.get("location"),
+                        "country": poi.get("country"),
                         "category": poi.get("category"),
                         "notes": poi.get("description"),
                     })

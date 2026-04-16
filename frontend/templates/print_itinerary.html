@@ -124,6 +124,21 @@
       color: #555;
       margin-top: 3px;
     }
+    .slot-maps {
+      font-size: 0.78rem;
+      margin-top: 4px;
+    }
+    .slot-maps a {
+      color: #1a73e8;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .slot-maps a:hover { text-decoration: underline; }
+    @media print {
+      .slot-maps a { color: #555; font-size: 0.7rem; }
+    }
 
     .doc-footer {
       margin-top: 36px;
@@ -195,6 +210,15 @@
             {% endif %}
             {% if s.get('notes') or s.get('description') %}
             <div class="slot-notes">{{ s.get('notes', s.get('description','')) }}</div>
+            {% endif %}
+            {% set place_name = s.get('title', s.get('name','')) %}
+            {% if place_name %}
+            {% set q = (place_name ~ (', ' ~ s.get('location','') if s.get('location') else '') ~ (', ' ~ s.get('country','') if s.get('country') else '')) | replace(' ', '+') %}
+            <div class="slot-maps">
+              <a href="https://www.google.com/maps/search/?api=1&query={{ q }}" target="_blank" rel="noopener noreferrer">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Maps
+              </a>
+            </div>
             {% endif %}
           </div>
         </div>
