@@ -229,8 +229,7 @@
             // Dim unselected chips when at max
             quickOptions.querySelectorAll(".interest-chip").forEach((c) => {
               if (!c.classList.contains("selected")) {
-                c.style.opacity = atMax ? "0.35" : "1";
-                c.style.pointerEvents = atMax ? "none" : "";
+                c.classList.toggle("dimmed", atMax);
               }
             });
 

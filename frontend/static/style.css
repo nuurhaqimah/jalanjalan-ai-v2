@@ -958,6 +958,11 @@ nav ul li a:hover {
   box-shadow: 1px 1px 0px 0px var(--fg);
   transform: translate(2px, 2px);
 }
+.chip.dimmed {
+  opacity: 0.35 !important;
+  pointer-events: none;
+  cursor: default;
+}
 .chip img {
   width: 22px;
   height: 22px;
