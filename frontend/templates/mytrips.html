@@ -56,7 +56,7 @@
           <div class="trip-activities">{{ t.description or '' }}</div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <a href="{{ url_for('view_trip', it_id=t.id) }}" class="plan-btn">View Details</a>
-            <a href="{{ url_for('mytrips_export', it_id=t.id) }}" class="plan-btn secondary">Export PDF</a>
+            <a href="{{ url_for('mytrips_export', it_id=t.id) }}" class="plan-btn secondary" target="_blank" rel="noopener noreferrer">Export PDF</a>
             <button class="plan-btn danger delete-btn" data-id="{{ t.id }}">Delete</button>
           </div>
         </div>
