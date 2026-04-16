@@ -69,7 +69,6 @@ Open `backend/.env` and fill in your values:
 |---|---|
 | `GEMINI_API_KEY` | [Google AI Studio](https://aistudio.google.com/) → Get API key |
 | `AMADEUS_CLIENT_ID` / `AMADEUS_CLIENT_SECRET` | [Amadeus for Developers](https://developers.amadeus.com/) → Create app |
-| `SKYSCANNER_API_KEY` | [RapidAPI — Skyscanner](https://rapidapi.com/skyscanner/api/skyscanner-flight-search) |
 | `DB_PASSWORD` | Your local PostgreSQL password |
 | `FLASK_SECRET_KEY` | Any long random string (e.g. run `python -c "import secrets; print(secrets.token_hex(32))"`) |
 | `ADMIN_PASS` | Choose a secure admin password |
@@ -130,6 +129,6 @@ Open your browser at **http://localhost:5000**
 - **Backend** — Python, Flask, psycopg2
 - **AI** — Google Gemini 1.5 Flash
 - **Database** — PostgreSQL
-- **Flight search** — Amadeus API
+- **Flight & hotel search** — Amadeus API
 - **Frontend** — HTML, CSS, Vanilla JS
-- **PDF export** — WeasyPrint *(optional — requires system GTK libraries on Windows)*
+- **PDF export** — Browser native print (`window.print()` via a dedicated print view)
