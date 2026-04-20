@@ -1,20 +1,111 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ trip.title }} • JalanJalan.AI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <title>{{ trip.title }} • Route2Go</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
     <style>
-      .maps-link { font-size: 0.8rem; color: #1a73e8; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; }
-      .maps-link:hover { text-decoration: underline; }
+      .maps-link {
+        font-size: 0.88rem;
+        font-family: var(--font-body);
+        font-weight: 600;
+        color: #1a73e8;
+        background: #e8f0fe;
+        border: 2px solid #1a73e8;
+        border-radius: 20px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        margin-top: 4px;
+        box-shadow: 2px 2px 0px 0px #1a73e8;
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s,
+          background 0.15s;
+      }
+      .maps-link:hover {
+        background: #d2e3fc;
+        box-shadow: 1px 1px 0px 0px #1a73e8;
+        transform: translate(1px, 1px);
+        text-decoration: none;
+      }
+      .day-group {
+        margin-bottom: 32px;
+      }
+      .day-label {
+        font-family: var(--font-head);
+        font-size: 1.25rem;
+        color: var(--fg);
+        border-bottom: 3px solid var(--brand);
+        padding-bottom: 6px;
+        margin: 24px 0 14px;
+      }
+      .route-day-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        font-family: var(--font-body);
+        font-weight: 600;
+        color: var(--white);
+        background: var(--brand);
+        border: 2px solid var(--fg);
+        border-radius: 20px;
+        text-decoration: none;
+        padding: 8px 18px;
+        margin-top: 14px;
+        box-shadow: 3px 3px 0px 0px var(--fg);
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s;
+      }
+      .route-day-btn:hover {
+        box-shadow: 1px 1px 0px 0px var(--fg);
+        transform: translate(2px, 2px);
+      }
+      .transport-tips {
+        background: var(--yellow);
+        border: 3px solid var(--fg);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-top: 32px;
+        box-shadow: 4px 4px 0px 0px var(--fg);
+      }
+      .transport-tips h3 {
+        font-family: var(--font-head);
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        color: var(--fg);
+      }
+      .transport-tips ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .transport-tips ul li {
+        font-family: var(--font-body);
+        font-size: 0.92rem;
+        color: var(--fg);
+      }
     </style>
   </head>
   <body>
     <nav class="main-navbar">
       <div class="logo">
-        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="Logo" />
-        <a class="no-underline" href="{{ url_for('index') }}">JalanJalan.AI</a>
+        <img
+          src="{{ url_for('static', filename='assets/logo.png') }}"
+          alt="Logo"
+        />
+        <a class="no-underline" href="{{ url_for('index') }}">Route2Go</a>
       </div>
       <ul class="nav-links">
         <li><a href="{{ url_for('about') }}">About</a></li>
@@ -24,14 +115,28 @@
       <div class="nav-actions">
         {% if session.get('user') %}
         <div class="user-profile">
-          <button class="profile-btn" title="{{ session.get('user').get('name','User') }}">
+          <button
+            class="profile-btn"
+            title="{{ session.get('user').get('name','User') }}"
+          >
             <span class="user-avatar-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="8" r="4"/>
-                <path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" />
               </svg>
             </span>
-            <span class="user-name">{{ session.get('user').get('name','User') }}</span>
+            <span class="user-name"
+              >{{ session.get('user').get('name','User') }}</span
+            >
           </button>
           <div class="dropdown-menu">
             <a href="{{ url_for('mytrips') }}">My Trips</a>
@@ -39,7 +144,9 @@
           </div>
         </div>
         {% else %}
-        <a href="{{ url_for('user_login') }}" class="get-started-btn">Get started</a>
+        <a href="{{ url_for('user_login') }}" class="get-started-btn"
+          >Get started</a
+        >
         {% endif %}
       </div>
     </nav>
@@ -54,77 +161,196 @@
           {% endif %}
         </div>
         <div class="actions">
-          <a href="{{ url_for('mytrips') }}" class="btn secondary">← Back to My Trips</a>
-          <a href="{{ url_for('mytrips_export', it_id=trip.id) }}" class="btn" target="_blank">Export PDF</a>
+          <a href="{{ url_for('mytrips') }}" class="btn secondary"
+            >← Back to My Trips</a
+          >
+          <a
+            href="{{ url_for('mytrips_export', it_id=trip.id) }}"
+            class="btn"
+            target="_blank"
+            >Export PDF</a
+          >
           <button class="btn danger" id="deleteTripBtn">Delete Trip</button>
         </div>
       </div>
 
-      {% set schedule = trip.data.get('schedule', []) if trip.data else [] %}
-      {% if schedule %}
-        {% for s in schedule %}
+      {% set schedule = trip.data.get('schedule', []) if trip.data else [] %} {%
+      set country = schedule[0].get('country', '') if schedule else '' %} {% if
+      schedule %} {% for day_name, day_stops in schedule | groupby('day') %}
+      <div class="day-group">
+        <h3 class="day-label">{{ day_name }}</h3>
+        {% for s in day_stops %}
         <div class="slot">
-          <h4>{{ s.get('day','') }} {{ s.get('start', s.get('time','')) }}{% if s.get('end') %} – {{ s.get('end') }}{% endif %}</h4>
-          <div><strong>{{ s.get('name', s.get('title','')) }}</strong>{% if s.get('poi_name') %} ({{ s.get('poi_name') }}){% endif %}</div>
+          <h4>
+            {{ s.get('start', s.get('time','')) }}{% if s.get('end') %} – {{
+            s.get('end') }}{% endif %}
+          </h4>
+          <div>
+            <strong>{{ s.get('name', s.get('title','')) }}</strong>{% if
+            s.get('poi_name') %} ({{ s.get('poi_name') }}){% endif %}
+          </div>
           {% if s.get('notes') or s.get('description') %}
-          <div class="detail-sub">{{ s.get('notes', s.get('description','')) }}</div>
-          {% endif %}
-          {% if s.get('image') %}
-          <div style="margin-top:8px;"><img src="{{ s.get('image') }}" alt="" style="max-width:100%; border-radius:10px;"/></div>
-          {% endif %}
-          {% set place_name = s.get('name', s.get('title','')) %}
-          {% if place_name %}
-          {% set q = (place_name ~ (', ' ~ s.get('location','') if s.get('location') else '') ~ (', ' ~ s.get('country','') if s.get('country') else '')) | replace(' ', '+') %}
-          <div style="margin-top:6px;">
-            <a href="https://www.google.com/maps/search/?api=1&query={{ q }}" target="_blank" rel="noopener noreferrer" class="maps-link">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>View on Google Maps
+          <div class="detail-sub">
+            {{ s.get('notes', s.get('description','')) }}
+          </div>
+          {% endif %} {% if s.get('image') %}
+          <div style="margin-top: 8px">
+            <img
+              src="{{ s.get('image') }}"
+              alt=""
+              style="max-width: 100%; border-radius: 10px"
+            />
+          </div>
+          {% endif %} {% set place_name = s.get('name', s.get('title','')) %} {%
+          if place_name %} {% set q = (place_name ~ (', ' ~ s.get('location','')
+          if s.get('location') else '') ~ (', ' ~ s.get('country','') if
+          s.get('country') else '')) | replace(' ', '+') %}
+          <div style="margin-top: 6px">
+            <a
+              href="https://www.google.com/maps/search/?api=1&query={{ q }}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="maps-link"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                style="vertical-align: middle; flex-shrink: 0"
+              >
+                <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" /></svg
+              >View on Google Maps
             </a>
           </div>
           {% endif %}
         </div>
-        {% endfor %}
-      {% else %}
-        <p>No schedule details found for this trip.</p>
+        {% endfor %} {% set ns = namespace(waypoints=[]) %} {% for s in
+        day_stops %} {% set place = s.get('name', s.get('title', '')) %} {% if
+        place %} {% set wp = (place ~ (', ' ~ s.get('location', '') if
+        s.get('location') else '') ~ (', ' ~ s.get('country', '') if
+        s.get('country') else '')) | replace(' ', '+') %} {% set ns.waypoints =
+        ns.waypoints + [wp] %} {% endif %} {% endfor %} {% if ns.waypoints |
+        length >= 2 %}
+        <a
+          href="https://www.google.com/maps/dir/{{ ns.waypoints | join('/') }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="route-day-btn"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            style="flex-shrink: 0"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          {{ day_name }} — Full Route on Google Maps →
+        </a>
+        {% endif %}
+      </div>
+      {% endfor %} {% set tips_map = { 'Brunei': ['🚗 Grab and local taxis are
+      the main transport options', '🚌 Public buses are limited — plan routes in
+      advance', '⛵ Water taxis link Kampong Ayer to the mainland', '🚶 BSB city
+      centre is walkable for nearby spots'], 'Malaysia': ['🚇 KL has MRT, LRT
+      and Monorail — get a Touch n Go card', '📱 Grab is widely available and
+      affordable', '🚌 Express buses and KTM trains connect cities well', '⚠️ KL
+      traffic can be heavy — allow extra time'], 'Singapore': ['🚇 The MRT is
+      fast, clean and covers the whole island', '💳 Get an EZ-Link card for bus
+      and MRT travel', '📱 Grab is available but MRT is usually faster', '🚶
+      Most tourist areas are very walkable'], 'Thailand': ['🚇 Bangkok BTS and
+      MRT — avoid rush hours (7–9am, 5–8pm)', '📱 Grab works in major cities;
+      agree on tuk-tuk fares first', '🚌 Songthaews (shared pickups) are cheap
+      for local travel', '⚠️ Traffic can be very heavy — build in extra travel
+      time'], 'Indonesia': ['📱 Gojek and Grab are the go-to ride-hailing apps',
+      '🚌 TransJakarta buses are affordable but crowded in rush hour', '🏍️ Ojek
+      (motorbike taxi) is fastest for short distances', '⚠️ Avoid 7–9am and
+      5–8pm for road travel in major cities'], 'Philippines': ['📱 Grab is
+      available in Manila, Cebu and major cities', '🚌 Jeepneys are iconic and
+      cheap for short urban hops', '🛺 Tricycles cover the last mile in smaller
+      towns', '⚠️ Metro Manila traffic can be severe — allow extra time'] } %}
+      {% set country_tips = tips_map.get(country, []) %} {% if country_tips %}
+      <div class="transport-tips">
+        <h3>🗺️ Getting Around {{ country }}</h3>
+        <ul>
+          {% for tip in country_tips %}
+          <li>{{ tip }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %} {% else %}
+      <p>No schedule details found for this trip.</p>
       {% endif %}
     </main>
 
     <script>
       // Navbar dropdown toggle
-      document.addEventListener('DOMContentLoaded', function () {
-        const userProfile = document.querySelector('.user-profile');
+      document.addEventListener("DOMContentLoaded", function () {
+        const userProfile = document.querySelector(".user-profile");
         if (!userProfile) return;
-        userProfile.querySelector('.profile-btn').addEventListener('click', function (e) {
-          e.stopPropagation();
-          userProfile.classList.toggle('open');
-        });
-        document.addEventListener('click', function (e) {
-          if (!userProfile.contains(e.target)) userProfile.classList.remove('open');
+        userProfile
+          .querySelector(".profile-btn")
+          .addEventListener("click", function (e) {
+            e.stopPropagation();
+            userProfile.classList.toggle("open");
+          });
+        document.addEventListener("click", function (e) {
+          if (!userProfile.contains(e.target))
+            userProfile.classList.remove("open");
         });
       });
 
       // Delete trip
-      document.addEventListener('click', (e) => {
-        const btn = e.target.closest('#deleteTripBtn');
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest("#deleteTripBtn");
         if (!btn) return;
-        const root = document.querySelector('.detail-container');
-        const id = root?.getAttribute('data-id');
+        const root = document.querySelector(".detail-container");
+        const id = root?.getAttribute("data-id");
         if (!id) return;
 
         jjConfirm(
-          { title: 'Delete trip?', message: 'This trip will be permanently deleted and cannot be recovered.', confirmText: 'Yes, delete', danger: true, icon: '🗑️' },
+          {
+            title: "Delete trip?",
+            message:
+              "This trip will be permanently deleted and cannot be recovered.",
+            confirmText: "Yes, delete",
+            danger: true,
+            icon: "🗑️",
+          },
           async () => {
             try {
-              const res  = await fetch(`/mytrips/${id}/delete`, { method: 'DELETE' });
+              const res = await fetch(`/mytrips/${id}/delete`, {
+                method: "DELETE",
+              });
               const data = await res.json();
-              if (res.ok && data.status === 'success') {
+              if (res.ok && data.status === "success") {
                 window.location.href = "{{ url_for('mytrips') }}";
               } else {
-                jjAlert({ title: 'Could not delete', message: data.message || 'Failed to delete the trip.', icon: '⚠️' });
+                jjAlert({
+                  title: "Could not delete",
+                  message: data.message || "Failed to delete the trip.",
+                  icon: "⚠️",
+                });
               }
             } catch (err) {
-              jjAlert({ title: 'Network error', message: 'Something went wrong. Please try again.', icon: '⚠️' });
+              jjAlert({
+                title: "Network error",
+                message: "Something went wrong. Please try again.",
+                icon: "⚠️",
+              });
             }
-          }
+          },
         );
       });
     </script>

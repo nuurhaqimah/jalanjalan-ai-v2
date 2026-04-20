@@ -1,11 +1,11 @@
-# JalanJalan.AI
+# Route2Go
 
 An AI-powered travel planner that generates personalised weekend itineraries through a chatbot interface, complete with images, accommodation suggestions, and flight search.
 
 ## Project Structure
 
 ```
-jalanjalan_ai/
+route2go/
 ├── backend/
 │   ├── app.py            # Flask app — all routes and API logic
 │   ├── database.py       # PostgreSQL helper functions
@@ -34,7 +34,7 @@ jalanjalan_ai/
 
 ```bash
 git clone <repo-url>
-cd jalanjalan_ai
+cd route2go
 ```
 
 ### 2. Create and activate a virtual environment
@@ -65,13 +65,13 @@ cp .env.example .env
 
 Open `backend/.env` and fill in your values:
 
-| Variable | Where to get it |
-|---|---|
-| `GEMINI_API_KEY` | [Google AI Studio](https://aistudio.google.com/) → Get API key |
-| `AMADEUS_CLIENT_ID` / `AMADEUS_CLIENT_SECRET` | [Amadeus for Developers](https://developers.amadeus.com/) → Create app |
-| `DB_PASSWORD` | Your local PostgreSQL password |
-| `FLASK_SECRET_KEY` | Any long random string (e.g. run `python -c "import secrets; print(secrets.token_hex(32))"`) |
-| `ADMIN_PASS` | Choose a secure admin password |
+| Variable                                 | Where to get it                                                                              |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `GEMINI_API_KEY`                         | [Google AI Studio](https://aistudio.google.com/) → Get API key                               |
+| `AMADEUS_API_KEY` / `AMADEUS_API_SECRET` | [Amadeus for Developers](https://developers.amadeus.com/) → Create app                       |
+| `DB_PASSWORD`                            | Your local PostgreSQL password                                                               |
+| `FLASK_SECRET_KEY`                       | Any long random string (e.g. run `python -c "import secrets; print(secrets.token_hex(32))"`) |
+| `ADMIN_PASS`                             | Choose a secure admin password                                                               |
 
 ### 5. Create the PostgreSQL database
 
@@ -103,24 +103,24 @@ Open your browser at **http://localhost:5000**
 
 ## Login Details
 
-| Role | Username | Password | URL |
-|---|---|---|---|
-| Admin | `admin` | *(value of `ADMIN_PASS` in `.env`)* | http://localhost:5000/admin |
-| Regular user | *(register yourself)* | *(your choice)* | http://localhost:5000/user/signup |
+| Role         | Username              | Password                            | URL                               |
+| ------------ | --------------------- | ----------------------------------- | --------------------------------- |
+| Admin        | `admin`               | _(value of `ADMIN_PASS` in `.env`)_ | http://localhost:5000/admin       |
+| Regular user | _(register yourself)_ | _(your choice)_                     | http://localhost:5000/user/signup |
 
 ---
 
 ## Key Pages
 
-| URL | Description |
-|---|---|
-| `/` | Home / chatbot |
-| `/trip` | Generate a new itinerary |
-| `/mytrips` | View saved itineraries |
-| `/user/signup` | Register a new account |
-| `/user/login` | User login |
-| `/admin` | Admin panel (manage POIs) |
-| `/health` | Health check endpoint |
+| URL            | Description               |
+| -------------- | ------------------------- |
+| `/`            | Home / chatbot            |
+| `/trip`        | Generate a new itinerary  |
+| `/mytrips`     | View saved itineraries    |
+| `/user/signup` | Register a new account    |
+| `/user/login`  | User login                |
+| `/admin`       | Admin panel (manage POIs) |
+| `/health`      | Health check endpoint     |
 
 ---
 

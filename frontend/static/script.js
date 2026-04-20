@@ -10,31 +10,31 @@ document.addEventListener("DOMContentLoaded", () => {
   let typingIndicator;
   let map, markers = [];
   let destinations = [
-        {
-          id: 1,
-          name: "Pantai Jerudong",
-          category: "alam",
-          budget_level: "cheap",
-          travel_style: "relaxing",
-          location: "Brunei",
-          description: "Beautiful beach for sunsets.",
-        },
-        {
-          id: 2,
-          name: "Kampong Ayer",
-          category: "sejarah",
-          budget_level: "moderate",
-          travel_style: "cultural",
-          location: "Bandar Seri Begawan",
-          description: "Historic water village.",
-        },
-      ];
+    {
+      id: 1,
+      name: "Pantai Jerudong",
+      category: "alam",
+      budget_level: "cheap",
+      travel_style: "relaxing",
+      location: "Brunei",
+      description: "Beautiful beach for sunsets.",
+    },
+    {
+      id: 2,
+      name: "Kampong Ayer",
+      category: "sejarah",
+      budget_level: "moderate",
+      travel_style: "cultural",
+      location: "Bandar Seri Begawan",
+      description: "Historic water village.",
+    },
+  ];
 
-      function renderTable() {
-        table.innerHTML = "";
-        destinations.forEach((dest) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
+  function renderTable() {
+    table.innerHTML = "";
+    destinations.forEach((dest) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
           <td>${dest.name}</td>
           <td>${dest.category}</td>
           <td>${dest.budget_level}</td>
@@ -45,60 +45,60 @@ document.addEventListener("DOMContentLoaded", () => {
             <button class="delete-btn" onclick="deleteDestination(${dest.id})">Delete</button>
           </td>
         `;
-          table.appendChild(row);
-        });
-      }
+      table.appendChild(row);
+    });
+  }
 
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const id = document.getElementById("destinationId").value;
-        const newDest = {
-          id: id ? parseInt(id) : Date.now(),
-          name: document.getElementById("name").value,
-          category: document.getElementById("category").value,
-          budget_level: document.getElementById("budget_level").value,
-          travel_style: document.getElementById("travel_style").value,
-          location: document.getElementById("location").value,
-          description: document.getElementById("description").value,
-        };
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const id = document.getElementById("destinationId").value;
+    const newDest = {
+      id: id ? parseInt(id) : Date.now(),
+      name: document.getElementById("name").value,
+      category: document.getElementById("category").value,
+      budget_level: document.getElementById("budget_level").value,
+      travel_style: document.getElementById("travel_style").value,
+      location: document.getElementById("location").value,
+      description: document.getElementById("description").value,
+    };
 
-        if (id) {
-          destinations = destinations.map((d) =>
-            d.id === parseInt(id) ? newDest : d
-          );
-        } else {
-          destinations.push(newDest);
-        }
+    if (id) {
+      destinations = destinations.map((d) =>
+        d.id === parseInt(id) ? newDest : d,
+      );
+    } else {
+      destinations.push(newDest);
+    }
 
-        form.reset();
-        document.getElementById("destinationId").value = "";
-        renderTable();
-      });
+    form.reset();
+    document.getElementById("destinationId").value = "";
+    renderTable();
+  });
 
-      function editDestination(id) {
-        const dest = destinations.find((d) => d.id === id);
-        document.getElementById("destinationId").value = dest.id;
-        document.getElementById("name").value = dest.name;
-        document.getElementById("category").value = dest.category;
-        document.getElementById("budget_level").value = dest.budget_level;
-        document.getElementById("travel_style").value = dest.travel_style;
-        document.getElementById("location").value = dest.location;
-        document.getElementById("description").value = dest.description;
-      }
+  function editDestination(id) {
+    const dest = destinations.find((d) => d.id === id);
+    document.getElementById("destinationId").value = dest.id;
+    document.getElementById("name").value = dest.name;
+    document.getElementById("category").value = dest.category;
+    document.getElementById("budget_level").value = dest.budget_level;
+    document.getElementById("travel_style").value = dest.travel_style;
+    document.getElementById("location").value = dest.location;
+    document.getElementById("description").value = dest.description;
+  }
 
-      function deleteDestination(id) {
-        destinations = destinations.filter((d) => d.id !== id);
-        renderTable();
-      }
+  function deleteDestination(id) {
+    destinations = destinations.filter((d) => d.id !== id);
+    renderTable();
+  }
 
-      renderTable();
+  renderTable();
 
   // === Map setup ===
   function initMap() {
     if (document.getElementById("map")) {
       map = L.map("map").setView([51.505, -0.09], 13);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors"
+        attribution: "&copy; OpenStreetMap contributors",
       }).addTo(map);
     }
   }
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, user_id: userId, prefs })
+        body: JSON.stringify({ message, user_id: userId, prefs }),
       });
 
       const data = await res.json();
@@ -127,7 +127,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.itinerary) renderItinerary(data.itinerary);
       if (data.flights) renderFlights(data.flights);
       if (data.hotels) renderHotels(data.hotels);
-
     } catch (err) {
       hideTypingIndicator();
       addChatMessage("bot", "⚠️ Error: could not connect to backend.");
@@ -151,14 +150,14 @@ document.addEventListener("DOMContentLoaded", () => {
       // Multi-select: user picks 1 or 2, then confirms
       let selected = [];
 
-      options.forEach(opt => {
+      options.forEach((opt) => {
         const btn = document.createElement("button");
         btn.className = "chat-option-btn";
         btn.textContent = opt;
         btn.onclick = () => {
           if (btn.classList.contains("selected")) {
             btn.classList.remove("selected");
-            selected = selected.filter(s => s !== opt);
+            selected = selected.filter((s) => s !== opt);
           } else if (selected.length < 2) {
             btn.classList.add("selected");
             selected.push(opt);
@@ -177,10 +176,9 @@ document.addEventListener("DOMContentLoaded", () => {
         sendChat(label, { interests: selected });
       };
       container.appendChild(confirmBtn);
-
     } else {
       // Single-select: clicking sends immediately
-      options.forEach(opt => {
+      options.forEach((opt) => {
         const btn = document.createElement("button");
         btn.className = "chat-option-btn";
         btn.textContent = opt;
@@ -205,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function showTypingIndicator() {
     typingIndicator = document.createElement("div");
     typingIndicator.className = "chat-bot typing";
-    typingIndicator.textContent = "JalanJalan.AI is thinking...";
+    typingIndicator.textContent = "Route2Go is thinking...";
     chatBox.appendChild(typingIndicator);
     chatBox.scrollTop = chatBox.scrollHeight;
   }
@@ -220,12 +218,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // === Render itinerary ===
   function renderItinerary(itinerary) {
     let html = "<h2>Your Itinerary</h2>";
-    itinerary.forEach(item => {
-      const queryParts = [item.title, item.location, item.country].filter(Boolean);
+    itinerary.forEach((item) => {
+      const queryParts = [item.title, item.location, item.country].filter(
+        Boolean,
+      );
       const mapsQuery = encodeURIComponent(queryParts.join(", "));
       const mapsLink = item.title
-        ? `<a href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noopener noreferrer" style="font-size:0.78rem;color:#1a73e8;text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:4px;">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>View on Google Maps
+        ? `<a href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noopener noreferrer" style="font-size:0.88rem;font-weight:600;color:#1a73e8;background:#e8f0fe;border:2px solid #1a73e8;border-radius:20px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;padding:5px 12px;margin-top:6px;box-shadow:2px 2px 0px 0px #1a73e8;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>View on Google Maps
            </a>`
         : "";
       html += `
@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // === Render flights from API ===
   function renderFlights(flights) {
     let html = "<h2>Flight Options</h2>";
-    flights.forEach(f => {
+    flights.forEach((f) => {
       html += `
         <div class="activity-card">
           <div class="activity-info">
@@ -264,10 +264,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // === Render hotels from API ===
   function renderHotels(hotels) {
     let html = "<h2>Hotel Options</h2>";
-    hotels.forEach(h => {
+    hotels.forEach((h) => {
       html += `
         <div class="hotel-card">
-          <img src="${h.image || '/static/assets/hotel1.jpg'}" class="hotel-image"/>
+          <img src="${h.image || "/static/assets/hotel1.jpg"}" class="hotel-image"/>
           <div class="hotel-info">
             <h3>${h.name}</h3>
             <p>${h.address}</p>
@@ -284,10 +284,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderMap(itinerary) {
     if (!map) initMap();
     clearMarkers();
-    const locations = itinerary.filter(i => i.lat && i.lon);
+    const locations = itinerary.filter((i) => i.lat && i.lon);
     if (locations.length) {
-      locations.forEach(i => {
-        const marker = L.marker([i.lat, i.lon]).addTo(map)
+      locations.forEach((i) => {
+        const marker = L.marker([i.lat, i.lon])
+          .addTo(map)
           .bindPopup(`<b>${i.title}</b><br>${i.description}`);
         markers.push(marker);
       });
@@ -297,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function clearMarkers() {
-    markers.forEach(m => map.removeLayer(m));
+    markers.forEach((m) => map.removeLayer(m));
     markers = [];
   }
 
@@ -306,31 +307,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("generateBtn").onclick = async () => {
     const res = await fetch("/generate", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + localStorage.getItem("token")
-        },
-        body: JSON.stringify({
-            prefs: { budget: "medium", interests: ["food", "history"] },
-            days: 2
-        })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+      body: JSON.stringify({
+        prefs: { budget: "medium", interests: ["food", "history"] },
+        days: 2,
+      }),
     });
     const data = await res.json();
     lastItineraryId = data.id;
     alert("Itinerary generated!");
     document.getElementById("pdfBtn").style.display = "inline-block";
-};
+  };
 
   document.getElementById("pdfBtn").onclick = () => {
     if (lastItineraryId) {
-        window.location.href = "/export/" + lastItineraryId + "?Authorization=Bearer " + localStorage.getItem("token");
+      window.location.href =
+        "/export/" +
+        lastItineraryId +
+        "?Authorization=Bearer " +
+        localStorage.getItem("token");
     }
-};
-
+  };
 
   // === Event Listeners ===
-  chatInput.addEventListener("keypress", e => {
+  chatInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") sendChat(chatInput.value.trim());
   });
   sendChatBtn.addEventListener("click", () => sendChat(chatInput.value.trim()));

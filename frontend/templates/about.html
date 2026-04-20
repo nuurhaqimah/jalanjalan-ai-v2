@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Us - JalanJalan.AI</title>
+    <title>About Us - Route2Go</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
@@ -18,13 +18,36 @@
         animation: float 15s ease-in-out infinite;
         z-index: 0;
       }
-      .blob1 { width: 220px; height: 220px; background: #ff7636; top: 18%; left: 12%; }
-      .blob2 { width: 260px; height: 260px; background: #ff9a6c; top: 50%; left: 55%; }
-      .blob3 { width: 180px; height: 180px; background: #ffb08c; top: 30%; left: 75%; }
+      .blob1 {
+        width: 220px;
+        height: 220px;
+        background: #ff7636;
+        top: 18%;
+        left: 12%;
+      }
+      .blob2 {
+        width: 260px;
+        height: 260px;
+        background: #ff9a6c;
+        top: 50%;
+        left: 55%;
+      }
+      .blob3 {
+        width: 180px;
+        height: 180px;
+        background: #ffb08c;
+        top: 30%;
+        left: 75%;
+      }
 
       @keyframes float {
-        0%, 100% { transform: translateY(0) translateX(0); }
-        50%       { transform: translateY(-20px) translateX(15px); }
+        0%,
+        100% {
+          transform: translateY(0) translateX(0);
+        }
+        50% {
+          transform: translateY(-20px) translateX(15px);
+        }
       }
 
       /* === Highlight underline SVG === */
@@ -54,13 +77,28 @@
       }
 
       /* === Fade-in Animation === */
-      .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
-      .fade-in.visible { opacity: 1; transform: translateY(0); }
+      .fade-in {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
       /* Stagger each element inside the about card */
-      .about-container h1.fade-in       { transition-delay: 0s; }
-      .about-container .subheading.fade-in { transition-delay: 0.22s; }
-      .about-container p.fade-in        { transition-delay: 0.42s; }
+      .about-container h1.fade-in {
+        transition-delay: 0s;
+      }
+      .about-container .subheading.fade-in {
+        transition-delay: 0.22s;
+      }
+      .about-container p.fade-in {
+        transition-delay: 0.42s;
+      }
     </style>
   </head>
   <body>
@@ -71,7 +109,7 @@
           src="{{ url_for('static', filename='assets/logo.png') }}"
           alt="Logo"
         />
-        <a href="{{ url_for('index') }}" class="no-underline">JalanJalan.AI</a>
+        <a href="{{ url_for('index') }}" class="no-underline">Route2Go</a>
       </div>
       <ul class="nav-links">
         <li><a href="{{ url_for('about') }}" class="active">About</a></li>
@@ -80,23 +118,39 @@
       </ul>
       <div class="nav-actions">
         {% if session.get('user') %}
-          <div class="user-profile">
-            <button class="profile-btn" title="{{ session.get('user').get('name','User') }}">
-              <span class="user-avatar-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="8" r="4"/>
-                  <path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
-                </svg>
-              </span>
-              <span class="user-name">{{ session.get('user').get('name','User') }}</span>
-            </button>
-            <div class="dropdown-menu">
-              <a href="{{ url_for('mytrips') }}">My Trips</a>
-              <a href="{{ url_for('user_logout') }}">Logout</a>
-            </div>
+        <div class="user-profile">
+          <button
+            class="profile-btn"
+            title="{{ session.get('user').get('name','User') }}"
+          >
+            <span class="user-avatar-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" />
+              </svg>
+            </span>
+            <span class="user-name"
+              >{{ session.get('user').get('name','User') }}</span
+            >
+          </button>
+          <div class="dropdown-menu">
+            <a href="{{ url_for('mytrips') }}">My Trips</a>
+            <a href="{{ url_for('user_logout') }}">Logout</a>
           </div>
+        </div>
         {% else %}
-          <a href="{{ url_for('user_login') }}" class="get-started-btn">Get started</a>
+        <a href="{{ url_for('user_login') }}" class="get-started-btn"
+          >Get started</a
+        >
         {% endif %}
       </div>
     </nav>
@@ -108,40 +162,56 @@
 
     <!-- About Section -->
     <section class="about-section">
-    <div class="about-container">
-      <h1 class="fade-in">
-        Your <span class="highlight">ultimate
-          <svg class="highlight-svg" viewBox="0 0 260 16" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M3,12 C30,7 75,4 130,7 C170,9 215,8 257,6"
-                  stroke="#ff6b35" stroke-width="4.5" fill="none"
-                  stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span> AI-powered travel companion
-      </h1>
-      <div class="subheading fade-in">
-        Smart, personalized itineraries designed to help you explore
-        destinations efficiently and enjoyably.
+      <div class="about-container">
+        <h1 class="fade-in">
+          Your
+          <span class="highlight"
+            >ultimate
+            <svg
+              class="highlight-svg"
+              viewBox="0 0 260 16"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M3,12 C30,7 75,4 130,7 C170,9 215,8 257,6"
+                stroke="#ff6b35"
+                stroke-width="4.5"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+          AI-powered travel companion
+        </h1>
+        <div class="subheading fade-in">
+          Smart, personalized itineraries designed to help you explore
+          destinations efficiently and enjoyably.
+        </div>
+        <p class="fade-in">
+          Whether you're a solo traveler, a couple, or a family, Route2Go
+          ensures your journey is optimized with curated recommendations for
+          attractions, restaurants, and hidden gems — making every trip
+          unforgettable.
+        </p>
       </div>
-      <p class="fade-in">
-        Whether you're a solo traveler, a couple, or a family, JalanJalan.AI
-        ensures your journey is optimized with curated recommendations for
-        attractions, restaurants, and hidden gems — making every trip
-        unforgettable.
-      </p>
-    </div>
     </section>
 
     <script>
       // Dropdown toggle for user-profile navbar
-      document.addEventListener('DOMContentLoaded', function () {
-        const userProfile = document.querySelector('.user-profile');
+      document.addEventListener("DOMContentLoaded", function () {
+        const userProfile = document.querySelector(".user-profile");
         if (userProfile) {
-          userProfile.querySelector('.profile-btn').addEventListener('click', function (e) {
-            e.stopPropagation();
-            userProfile.classList.toggle('open');
-          });
-          document.addEventListener('click', function (e) {
-            if (!userProfile.contains(e.target)) userProfile.classList.remove('open');
+          userProfile
+            .querySelector(".profile-btn")
+            .addEventListener("click", function (e) {
+              e.stopPropagation();
+              userProfile.classList.toggle("open");
+            });
+          document.addEventListener("click", function (e) {
+            if (!userProfile.contains(e.target))
+              userProfile.classList.remove("open");
           });
         }
       });

@@ -1,5 +1,5 @@
 /* =========================================================
-   JalanJalan.AI — Hand-Drawn Design System
+   Route2Go — Hand-Drawn Design System
    Fonts: Kalam (headings) · Patrick Hand (body)
    ========================================================= */
 @import url("https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&display=swap");
@@ -521,7 +521,9 @@ nav ul li a:hover {
   transform: rotate(-1deg);
 }
 #how .step {
-  transition: transform 0.1s, box-shadow 0.1s;
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s;
 }
 .step:nth-child(1):hover {
   transform: rotate(-3.5deg);
@@ -632,7 +634,11 @@ nav ul li a:hover {
 /* ---------------------------------------------------------
    Chat Card
    --------------------------------------------------------- */
-.chat-wrapper { display: flex; justify-content: center; margin: 20px 16px 48px; }
+.chat-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 20px 16px 48px;
+}
 
 .trip-page {
   height: 100svh;
@@ -911,8 +917,14 @@ nav ul li a:hover {
 
 /* Chip fade-in animation */
 @keyframes chipFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Chips */

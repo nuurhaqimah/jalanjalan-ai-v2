@@ -345,6 +345,9 @@ def trip():
     # Require user login before accessing the trip planner
     if not session.get('user'):
         return redirect('/user/login')
+    # Clear stale conversation state so every visit starts a fresh trip
+    user_id = session.get('user', {}).get('id', 'guest')
+    conversation_state.pop(str(user_id), None)
     return render_template('trip.html')
 
 @app.route('/mytrips')
@@ -935,16 +938,60 @@ def chat():
 
         collected = collected[:needed_pois]
 
-        itinerary = []
+        # --- Geographic clustering -------------------------------------------
+        # Group all collected POIs by location (city/area), then assign each
+        # day to a different cluster so stops within a day are close together.
+        # Saturday gets the largest cluster; Sunday gets the next-largest.
+        # This avoids jumping between distant cities or islands in one day.
+        def cluster_by_location(pois):
+            groups = {}
+            for p in pois:
+                loc = (p.get("location") or "").strip() or "general"
+                groups.setdefault(loc, []).append(p)
+            # Sort by descending POI count so the richest area goes first
+            return sorted(groups.items(), key=lambda x: -len(x[1]))
+
+        clusters = cluster_by_location(collected)
         days = ["Saturday", "Sunday"]
-        k = 0
-        for d in range(2):
-            for tb in time_blocks:
-                poi = collected[k % len(collected)] if collected else None
-                k += 1
+        day_pois = {}
+        used_ids = set()
+
+        for d_idx, day in enumerate(days):
+            slots_needed = len(time_blocks)
+            day_list = []
+            # Each day starts from a different cluster (offset by d_idx)
+            for j in range(len(clusters)):
+                _, loc_pois = clusters[(d_idx + j) % len(clusters)]
+                for p in loc_pois:
+                    if p["id"] not in used_ids and len(day_list) < slots_needed:
+                        used_ids.add(p["id"])
+                        day_list.append(p)
+                if len(day_list) >= slots_needed:
+                    break
+            # Pull any remaining unused POIs if still short
+            if len(day_list) < slots_needed:
+                for p in collected:
+                    if len(day_list) >= slots_needed:
+                        break
+                    if p["id"] not in used_ids:
+                        used_ids.add(p["id"])
+                        day_list.append(p)
+            # Last resort: cycle what we have
+            if day_list and len(day_list) < slots_needed:
+                base = list(day_list)
+                while len(day_list) < slots_needed:
+                    day_list.append(base[len(day_list) % len(base)])
+            day_pois[day] = day_list
+        # ---------------------------------------------------------------------
+
+        itinerary = []
+        for day in days:
+            for idx, tb in enumerate(time_blocks):
+                pois_for_day = day_pois.get(day, [])
+                poi = pois_for_day[idx] if idx < len(pois_for_day) else None
                 if poi:
                     itinerary.append({
-                        "day": days[d],
+                        "day": day,
                         "time": f"{tb[0]:02d}:00 - {tb[1]:02d}:00",
                         "title": poi["name"],
                         "location": poi.get("location"),
@@ -953,18 +1000,25 @@ def chat():
                         "notes": poi.get("description"),
                     })
 
-        schedule_text = "Awesome! I’ve put together a relaxed weekend plan. Feel free to tweak anything—want more food spots or nature?\n\n"
+        # Build schedule text — show the focus area for each day
+        day_areas = {
+            day: day_pois[day][0].get("location", "") if day_pois.get(day) else ""
+            for day in days
+        }
+        schedule_text = "Here's a geographically focused weekend plan — each day is centred around one area to keep travel time short. Feel free to tweak anything!\n\n"
         current_day = None
         for item in itinerary:
             if item["day"] != current_day:
                 current_day = item["day"]
-                schedule_text += f"{current_day}:\n"
+                area = day_areas.get(current_day, "")
+                area_note = f" (📍 {area})" if area else ""
+                schedule_text += f"{current_day}{area_note}:\n"
             schedule_text += f"- {item['time']}: {item['title']} ({item.get('category','')}) — {item.get('location','')}\n"
 
         # Itinerary is NOT auto-saved — user must explicitly click "Save this itinerary"
 
-        # Reset for next conversation; keep country as default
-        conversation_state[str(user_id)] = {"country": state.get("country"), "budget": None, "interests": [], "travel_style": None, "location": None}
+        # Fully reset conversation state — next /trip visit will start fresh
+        conversation_state.pop(str(user_id), None)
 
         return jsonify({
             "reply": schedule_text.strip(),

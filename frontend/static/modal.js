@@ -1,5 +1,5 @@
 /**
- * JalanJalan.AI — shared modal utility
+ * Route2Go — shared modal utility
  * Replaces browser confirm() and alert() with styled modals.
  *
  * Usage:

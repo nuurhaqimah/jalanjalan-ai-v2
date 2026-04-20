@@ -10,6 +10,58 @@
     />
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+      .route-row {
+        margin: 6px 0 2px;
+      }
+      .route-day-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        font-family: var(--font-body);
+        font-weight: 600;
+        color: var(--white);
+        background: var(--brand);
+        border: 2px solid var(--fg);
+        border-radius: 20px;
+        text-decoration: none;
+        padding: 8px 16px;
+        box-shadow: 3px 3px 0px 0px var(--fg);
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s;
+      }
+      .route-day-btn:hover {
+        box-shadow: 1px 1px 0px 0px var(--fg);
+        transform: translate(2px, 2px);
+      }
+      .transport-tips-chat {
+        background: var(--yellow);
+        border: 2px solid var(--fg);
+        border-radius: var(--r-wobbly-sm);
+        padding: 12px 16px;
+        margin: 6px 0;
+        box-shadow: 3px 3px 0px 0px var(--fg);
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        color: var(--fg);
+        max-width: 520px;
+      }
+      .transport-tips-chat strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      .transport-tips-chat ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+    </style>
   </head>
   <body class="trip-page">
     <nav class="main-navbar">
@@ -18,7 +70,7 @@
           src="{{ url_for('static', filename='assets/logo.png') }}"
           alt="Logo"
         />
-        <a href="{{ url_for('index') }}" class="no-underline">JalanJalan.AI</a>
+        <a href="{{ url_for('index') }}" class="no-underline">Route2Go</a>
       </div>
       <ul class="nav-links">
         <li><a href="{{ url_for('about') }}">About</a></li>
@@ -80,9 +132,9 @@
         <div class="chat-card">
           <div id="chatBox" class="chat-box">
             <div class="chat-message bot">
-              Hi! I’m JalanJalan.AI, your travel assistant. Tell me where you’d
-              like to go and what kind of weekend you’re dreaming of, and I’ll
-              plan it for you.
+              Hi! I’m Route2Go, your travel assistant. Tell me where you’d like
+              to go and what kind of weekend you’re dreaming of, and I’ll plan
+              it for you.
             </div>
             <div id="quickOptions" class="chip-row" style="display: none"></div>
           </div>
@@ -323,6 +375,45 @@
         scrollToBottom();
       }
 
+      const transportTips = {
+        Brunei: [
+          "🚗 Dart and local taxis are the main transport options",
+          "🚌 Public buses are limited — plan routes in advance",
+          "⛵ Water taxis link Kampong Ayer to the mainland",
+          "🚶 BSB city centre is walkable for nearby spots",
+        ],
+        Malaysia: [
+          "🚇 KL has MRT, LRT and Monorail — get a Touch n Go card",
+          "📱 Grab is widely available and affordable",
+          "🚌 Express buses and KTM trains connect cities well",
+          "⚠️ KL traffic can be heavy — allow extra time",
+        ],
+        Singapore: [
+          "🚇 The MRT is fast, clean and covers the whole island",
+          "💳 Get an EZ-Link card for bus and MRT travel",
+          "📱 Grab is available but MRT is usually faster",
+          "🚶 Most tourist areas are very walkable",
+        ],
+        Thailand: [
+          "🚇 Bangkok BTS and MRT — avoid rush hours (7–9am, 5–8pm)",
+          "📱 Grab works in major cities; agree on tuk-tuk fares first",
+          "🚌 Songthaews (shared pickups) are cheap for local travel",
+          "⚠️ Traffic can be heavy — build in extra travel time",
+        ],
+        Indonesia: [
+          "📱 Gojek and Grab are the go-to ride-hailing apps",
+          "🚌 TransJakarta buses are affordable but crowded in rush hour",
+          "🏍️ Ojek (motorbike taxi) is fastest for short distances",
+          "⚠️ Avoid 7–9am and 5–8pm for road travel in major cities",
+        ],
+        Philippines: [
+          "📱 Grab is available in Manila, Cebu and major cities",
+          "🚌 Jeepneys are iconic and cheap for short urban hops",
+          "🛺 Tricycles cover the last mile in smaller towns",
+          "⚠️ Metro Manila traffic can be severe — allow extra time",
+        ],
+      };
+
       function renderItinerary(items) {
         if (!Array.isArray(items) || !items.length) return;
         lastItinerary = items;
@@ -333,7 +424,7 @@
         items.forEach((it) => {
           if (it.day !== day) {
             day = it.day;
-            lines.push(`\n${day}:`);
+            lines.push(`\n${it.day}:`);
           }
           lines.push(
             `- ${it.time}: ${it.title} (${it.category || ""}) — ${it.location || ""}`,
@@ -344,6 +435,38 @@
         inner.textContent = lines.join("\n");
         wrapper.appendChild(inner);
         chatBox.insertBefore(wrapper, quickOptions);
+
+        // Per-day Google Maps route buttons
+        const dayMap = {};
+        items.forEach((it) => {
+          if (!dayMap[it.day]) dayMap[it.day] = [];
+          dayMap[it.day].push(it);
+        });
+        Object.entries(dayMap).forEach(([dayName, stops]) => {
+          const waypoints = stops
+            .map((s) =>
+              [s.title, s.location, s.country].filter(Boolean).join(", "),
+            )
+            .filter(Boolean)
+            .map((w) => encodeURIComponent(w));
+          if (waypoints.length >= 2) {
+            const routeDiv = document.createElement("div");
+            routeDiv.className = "route-row";
+            routeDiv.innerHTML = `<a href="https://www.google.com/maps/dir/${waypoints.join("/")}" target="_blank" rel="noopener noreferrer" class="route-day-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>${dayName} — Full Route on Google Maps →</a>`;
+            chatBox.insertBefore(routeDiv, quickOptions);
+          }
+        });
+
+        // Transport tips by country
+        const country = (items[0]?.country || "").trim();
+        const tips = transportTips[country] || [];
+        if (tips.length) {
+          const tipsDiv = document.createElement("div");
+          tipsDiv.className = "transport-tips-chat";
+          tipsDiv.innerHTML = `<strong>🗺️ Getting Around ${country}</strong><ul>${tips.map((t) => `<li>${t}</li>`).join("")}</ul>`;
+          chatBox.insertBefore(tipsDiv, quickOptions);
+        }
+
         scrollToBottom();
         saveBtn.style.display = "";
         itineraryGenerated = true;

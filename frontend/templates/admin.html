@@ -1,16 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard • JalanJalan.AI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <title>Admin Dashboard • Route2Go</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
   </head>
   <body>
     <nav class="main-navbar">
       <div class="logo">
-        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="Logo" />
-        <a href="{{ url_for('index') }}" class="no-underline">JalanJalan.AI</a>
+        <img
+          src="{{ url_for('static', filename='assets/logo.png') }}"
+          alt="Logo"
+        />
+        <a href="{{ url_for('index') }}" class="no-underline">Route2Go</a>
       </div>
       <ul class="nav-links">
         <li><a href="{{ url_for('about') }}">About</a></li>
@@ -31,7 +37,13 @@
         <form id="destinationForm">
           <input type="hidden" id="destinationId" />
 
-          <input class="form-input" type="text" id="name" placeholder="Destination Name" required />
+          <input
+            class="form-input"
+            type="text"
+            id="name"
+            placeholder="Destination Name"
+            required
+          />
 
           <select id="category" required>
             <option value="">Select Category</option>
@@ -56,13 +68,23 @@
             <option value="family">Family</option>
           </select>
 
-          <input class="form-input" type="text" id="location" name="location" placeholder="Location (city, town, region)" required />
+          <input
+            class="form-input"
+            type="text"
+            id="location"
+            name="location"
+            placeholder="Location (city, town, region)"
+            required
+          />
 
           <select id="country" name="country" required>
             <option value="">Select Country</option>
           </select>
 
-          <textarea id="description" placeholder="Description (optional)"></textarea>
+          <textarea
+            id="description"
+            placeholder="Description (optional)"
+          ></textarea>
 
           <button type="submit" class="admin-save-btn">Save Destination</button>
         </form>
@@ -74,11 +96,24 @@
 
         <!-- Filter Bar -->
         <div class="admin-filter-bar">
-          <input class="admin-search-input" type="text" id="filterSearch" placeholder="Search name or location…" />
-          <select id="filterCategory" class="admin-filter-select"><option value="">All Categories</option></select>
-          <select id="filterBudget"   class="admin-filter-select"><option value="">All Budgets</option></select>
-          <select id="filterStyle"    class="admin-filter-select"><option value="">All Styles</option></select>
-          <select id="filterCountry"  class="admin-filter-select"><option value="">All Countries</option></select>
+          <input
+            class="admin-search-input"
+            type="text"
+            id="filterSearch"
+            placeholder="Search name or location…"
+          />
+          <select id="filterCategory" class="admin-filter-select">
+            <option value="">All Categories</option>
+          </select>
+          <select id="filterBudget" class="admin-filter-select">
+            <option value="">All Budgets</option>
+          </select>
+          <select id="filterStyle" class="admin-filter-select">
+            <option value="">All Styles</option>
+          </select>
+          <select id="filterCountry" class="admin-filter-select">
+            <option value="">All Countries</option>
+          </select>
           <button class="admin-clear-btn" id="clearFilters">✕ Clear</button>
         </div>
         <p class="admin-results-count" id="resultsCount"></p>
@@ -87,12 +122,24 @@
           <table class="admin-table">
             <thead>
               <tr>
-                <th class="sortable" data-col="name">Name <span class="sort-icon">↕</span></th>
-                <th class="sortable" data-col="category">Category <span class="sort-icon">↕</span></th>
-                <th class="sortable" data-col="budget_level">Budget <span class="sort-icon">↕</span></th>
-                <th class="sortable" data-col="travel_style">Style <span class="sort-icon">↕</span></th>
-                <th class="sortable" data-col="location">Location <span class="sort-icon">↕</span></th>
-                <th class="sortable" data-col="country">Country <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-col="name">
+                  Name <span class="sort-icon">↕</span>
+                </th>
+                <th class="sortable" data-col="category">
+                  Category <span class="sort-icon">↕</span>
+                </th>
+                <th class="sortable" data-col="budget_level">
+                  Budget <span class="sort-icon">↕</span>
+                </th>
+                <th class="sortable" data-col="travel_style">
+                  Style <span class="sort-icon">↕</span>
+                </th>
+                <th class="sortable" data-col="location">
+                  Location <span class="sort-icon">↕</span>
+                </th>
+                <th class="sortable" data-col="country">
+                  Country <span class="sort-icon">↕</span>
+                </th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -103,27 +150,43 @@
     </div>
 
     <script>
-      const form        = document.getElementById('destinationForm');
-      const tableBody   = document.getElementById('destinationsTable');
-      const countrySelect = document.getElementById('country');
+      const form = document.getElementById("destinationForm");
+      const tableBody = document.getElementById("destinationsTable");
+      const countrySelect = document.getElementById("country");
 
       // ── Master data + filter/sort state ──────────────────
-      let allPois   = [];
-      let sortState = { col: null, dir: 'asc' };
+      let allPois = [];
+      let sortState = { col: null, dir: "asc" };
 
       // Semantic rank maps — columns that shouldn't sort alphabetically
       const SORT_RANK = {
-        budget_level: { cheap: 0, low: 0, moderate: 1, medium: 1, luxury: 2, high: 2 },
+        budget_level: {
+          cheap: 0,
+          low: 0,
+          moderate: 1,
+          medium: 1,
+          luxury: 2,
+          high: 2,
+        },
       };
 
       // Reverse maps: DB canonical value → form <option> value
       // The backend normalises alam→nature, cheap→low etc. on save,
       // so when loading a row for editing we must convert back.
-      const CATEGORY_REVERSE = { nature: 'alam', food: 'kuliner', history: 'sejarah', shopping: 'belanja' };
-      const BUDGET_REVERSE   = { low: 'cheap', medium: 'moderate', high: 'luxury' };
+      const CATEGORY_REVERSE = {
+        nature: "alam",
+        food: "kuliner",
+        history: "sejarah",
+        shopping: "belanja",
+      };
+      const BUDGET_REVERSE = {
+        low: "cheap",
+        medium: "moderate",
+        high: "luxury",
+      };
 
       function sortValue(col, raw) {
-        const val = (raw || '').toLowerCase();
+        const val = (raw || "").toLowerCase();
         if (SORT_RANK[col] && val in SORT_RANK[col]) return SORT_RANK[col][val];
         return val; // fall back to string for localeCompare
       }
@@ -138,7 +201,7 @@
 
       // ── Render ────────────────────────────────────────────
       function renderTable(pois) {
-        tableBody.innerHTML = '';
+        tableBody.innerHTML = "";
         if (pois.length === 0) {
           tableBody.innerHTML = `
             <tr>
@@ -149,14 +212,14 @@
           return;
         }
         pois.forEach((dest) => {
-          const tr = document.createElement('tr');
+          const tr = document.createElement("tr");
           tr.innerHTML = `
             <td>${dest.name}</td>
             <td>${dest.category}</td>
             <td>${dest.budget_level}</td>
-            <td>${dest.travel_style || ''}</td>
+            <td>${dest.travel_style || ""}</td>
             <td>${dest.location}</td>
-            <td>${dest.country || ''}</td>
+            <td>${dest.country || ""}</td>
             <td>
               <button class="admin-edit-btn" data-id="${dest.id}">Edit</button>
               <button class="admin-delete-btn" data-id="${dest.id}">Delete</button>
@@ -168,18 +231,26 @@
 
       // ── Filter + Sort ─────────────────────────────────────
       function applyFilters() {
-        const search  = document.getElementById('filterSearch').value.trim().toLowerCase();
-        const cat     = document.getElementById('filterCategory').value;
-        const budget  = document.getElementById('filterBudget').value;
-        const style   = document.getElementById('filterStyle').value;
-        const country = document.getElementById('filterCountry').value;
+        const search = document
+          .getElementById("filterSearch")
+          .value.trim()
+          .toLowerCase();
+        const cat = document.getElementById("filterCategory").value;
+        const budget = document.getElementById("filterBudget").value;
+        const style = document.getElementById("filterStyle").value;
+        const country = document.getElementById("filterCountry").value;
 
-        let filtered = allPois.filter(p => {
-          if (search  && !p.name.toLowerCase().includes(search) && !(p.location || '').toLowerCase().includes(search)) return false;
-          if (cat     && p.category     !== cat)     return false;
-          if (budget  && p.budget_level !== budget)  return false;
-          if (style   && p.travel_style !== style)   return false;
-          if (country && p.country      !== country) return false;
+        let filtered = allPois.filter((p) => {
+          if (
+            search &&
+            !p.name.toLowerCase().includes(search) &&
+            !(p.location || "").toLowerCase().includes(search)
+          )
+            return false;
+          if (cat && p.category !== cat) return false;
+          if (budget && p.budget_level !== budget) return false;
+          if (style && p.travel_style !== style) return false;
+          if (country && p.country !== country) return false;
           return true;
         });
 
@@ -188,17 +259,17 @@
             const av = sortValue(sortState.col, a[sortState.col]);
             const bv = sortValue(sortState.col, b[sortState.col]);
             let cmp;
-            if (typeof av === 'number' && typeof bv === 'number') {
+            if (typeof av === "number" && typeof bv === "number") {
               cmp = av - bv;
             } else {
               cmp = String(av).localeCompare(String(bv));
             }
-            return sortState.dir === 'asc' ? cmp : -cmp;
+            return sortState.dir === "asc" ? cmp : -cmp;
           });
         }
 
-        const count = document.getElementById('resultsCount');
-        count.textContent = `Showing ${filtered.length} of ${allPois.length} destination${allPois.length !== 1 ? 's' : ''}`;
+        const count = document.getElementById("resultsCount");
+        count.textContent = `Showing ${filtered.length} of ${allPois.length} destination${allPois.length !== 1 ? "s" : ""}`;
 
         renderTable(filtered);
       }
@@ -206,19 +277,22 @@
       // ── Populate filter dropdowns from live data ──────────
       function populateFilterDropdowns() {
         const fields = {
-          filterCategory: { key: 'category',     label: 'All Categories' },
-          filterBudget:   { key: 'budget_level',  label: 'All Budgets'    },
-          filterStyle:    { key: 'travel_style',  label: 'All Styles'     },
-          filterCountry:  { key: 'country',       label: 'All Countries'  },
+          filterCategory: { key: "category", label: "All Categories" },
+          filterBudget: { key: "budget_level", label: "All Budgets" },
+          filterStyle: { key: "travel_style", label: "All Styles" },
+          filterCountry: { key: "country", label: "All Countries" },
         };
         Object.entries(fields).forEach(([elId, { key, label }]) => {
-          const el  = document.getElementById(elId);
+          const el = document.getElementById(elId);
           const cur = el.value;
-          const unique = [...new Set(allPois.map(p => p[key]).filter(Boolean))].sort();
+          const unique = [
+            ...new Set(allPois.map((p) => p[key]).filter(Boolean)),
+          ].sort();
           el.innerHTML = `<option value="">${label}</option>`;
-          unique.forEach(v => {
-            const opt = document.createElement('option');
-            opt.value = v; opt.textContent = v;
+          unique.forEach((v) => {
+            const opt = document.createElement("option");
+            opt.value = v;
+            opt.textContent = v;
             el.appendChild(opt);
           });
           el.value = cur; // preserve any existing selection
@@ -226,24 +300,24 @@
       }
 
       // ── Sort on header click ──────────────────────────────
-      document.querySelectorAll('.admin-table th.sortable').forEach(th => {
-        th.addEventListener('click', () => {
+      document.querySelectorAll(".admin-table th.sortable").forEach((th) => {
+        th.addEventListener("click", () => {
           const col = th.dataset.col;
           if (sortState.col === col) {
-            sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc';
+            sortState.dir = sortState.dir === "asc" ? "desc" : "asc";
           } else {
             sortState.col = col;
-            sortState.dir = 'asc';
+            sortState.dir = "asc";
           }
           // Update all sort icons
-          document.querySelectorAll('.admin-table th.sortable').forEach(h => {
-            const icon = h.querySelector('.sort-icon');
+          document.querySelectorAll(".admin-table th.sortable").forEach((h) => {
+            const icon = h.querySelector(".sort-icon");
             if (h.dataset.col === sortState.col) {
-              icon.textContent = sortState.dir === 'asc' ? '↑' : '↓';
-              h.classList.add('sort-active');
+              icon.textContent = sortState.dir === "asc" ? "↑" : "↓";
+              h.classList.add("sort-active");
             } else {
-              icon.textContent = '↕';
-              h.classList.remove('sort-active');
+              icon.textContent = "↕";
+              h.classList.remove("sort-active");
             }
           });
           applyFilters();
@@ -251,21 +325,27 @@
       });
 
       // ── Filter input listeners ────────────────────────────
-      ['filterSearch','filterCategory','filterBudget','filterStyle','filterCountry'].forEach(id => {
-        document.getElementById(id).addEventListener('input', applyFilters);
-        document.getElementById(id).addEventListener('change', applyFilters);
+      [
+        "filterSearch",
+        "filterCategory",
+        "filterBudget",
+        "filterStyle",
+        "filterCountry",
+      ].forEach((id) => {
+        document.getElementById(id).addEventListener("input", applyFilters);
+        document.getElementById(id).addEventListener("change", applyFilters);
       });
 
-      document.getElementById('clearFilters').addEventListener('click', () => {
-        document.getElementById('filterSearch').value   = '';
-        document.getElementById('filterCategory').value = '';
-        document.getElementById('filterBudget').value   = '';
-        document.getElementById('filterStyle').value    = '';
-        document.getElementById('filterCountry').value  = '';
-        sortState = { col: null, dir: 'asc' };
-        document.querySelectorAll('.admin-table th.sortable').forEach(h => {
-          h.querySelector('.sort-icon').textContent = '↕';
-          h.classList.remove('sort-active');
+      document.getElementById("clearFilters").addEventListener("click", () => {
+        document.getElementById("filterSearch").value = "";
+        document.getElementById("filterCategory").value = "";
+        document.getElementById("filterBudget").value = "";
+        document.getElementById("filterStyle").value = "";
+        document.getElementById("filterCountry").value = "";
+        sortState = { col: null, dir: "asc" };
+        document.querySelectorAll(".admin-table th.sortable").forEach((h) => {
+          h.querySelector(".sort-icon").textContent = "↕";
+          h.classList.remove("sort-active");
         });
         applyFilters();
       });
@@ -273,106 +353,162 @@
       // ── Load POIs ─────────────────────────────────────────
       async function loadPois() {
         try {
-          const res  = await fetch('/admin/pois');
+          const res = await fetch("/admin/pois");
           const data = await res.json();
-          if (res.ok && data.status === 'success') {
+          if (res.ok && data.status === "success") {
             allPois = data.data || [];
             populateFilterDropdowns();
             applyFilters();
           } else {
-            jjAlert({ title: 'Load failed', message: data.message || 'Failed to load destinations.', icon: '⚠️' });
+            jjAlert({
+              title: "Load failed",
+              message: data.message || "Failed to load destinations.",
+              icon: "⚠️",
+            });
           }
         } catch (e) {
-          jjAlert({ title: 'Network error', message: 'Could not connect to the server. Please refresh.', icon: '⚠️' });
+          jjAlert({
+            title: "Network error",
+            message: "Could not connect to the server. Please refresh.",
+            icon: "⚠️",
+          });
         }
       }
 
       // ── Load countries for the Add/Edit form ──────────────
       async function loadCountries() {
         try {
-          const res  = await fetch('/api/poi/filters');
+          const res = await fetch("/api/poi/filters");
           const data = await res.json();
-          const preset = ['Brunei', 'Malaysia', 'Thailand', 'Singapore', 'Indonesia', 'Philippines'];
-          const countries = Array.from(new Set([...(data.countries || []), ...preset]));
+          const preset = [
+            "Brunei",
+            "Malaysia",
+            "Thailand",
+            "Singapore",
+            "Indonesia",
+            "Philippines",
+          ];
+          const countries = Array.from(
+            new Set([...(data.countries || []), ...preset]),
+          );
           countrySelect.innerHTML = '<option value="">Select Country</option>';
-          countries.forEach(c => {
-            const opt = document.createElement('option');
-            opt.value = c; opt.textContent = c; countrySelect.appendChild(opt);
+          countries.forEach((c) => {
+            const opt = document.createElement("option");
+            opt.value = c;
+            opt.textContent = c;
+            countrySelect.appendChild(opt);
           });
-        } catch (e) { /* ignore */ }
+        } catch (e) {
+          /* ignore */
+        }
       }
 
       // ── Form submit (add / update) ────────────────────────
-      form.addEventListener('submit', async (e) => {
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const id = document.getElementById('destinationId').value;
+        const id = document.getElementById("destinationId").value;
         const payload = {
-          name:         document.getElementById('name').value,
-          category:     document.getElementById('category').value,
-          budget_level: document.getElementById('budget_level').value,
-          travel_style: document.getElementById('travel_style').value,
-          location:     document.getElementById('location').value,
-          country:      document.getElementById('country').value,
-          description:  document.getElementById('description').value,
+          name: document.getElementById("name").value,
+          category: document.getElementById("category").value,
+          budget_level: document.getElementById("budget_level").value,
+          travel_style: document.getElementById("travel_style").value,
+          location: document.getElementById("location").value,
+          country: document.getElementById("country").value,
+          description: document.getElementById("description").value,
         };
         try {
           let res, data;
           if (id) {
-            res  = await fetch(`/admin/poi/${id}`, { method: 'PUT', body: toFormData(payload) });
+            res = await fetch(`/admin/poi/${id}`, {
+              method: "PUT",
+              body: toFormData(payload),
+            });
             data = await res.json();
           } else {
-            res  = await fetch('/admin/add', { method: 'POST', body: toFormData(payload) });
+            res = await fetch("/admin/add", {
+              method: "POST",
+              body: toFormData(payload),
+            });
             data = await res.json();
           }
-          if (res.ok && data.status === 'success') {
+          if (res.ok && data.status === "success") {
             form.reset();
-            document.getElementById('destinationId').value = '';
+            document.getElementById("destinationId").value = "";
             loadPois();
-            if (data.message) jjAlert({ title: 'Saved!', message: data.message, icon: '✅' });
+            if (data.message)
+              jjAlert({ title: "Saved!", message: data.message, icon: "✅" });
           } else {
-            jjAlert({ title: 'Save failed', message: data.message || 'Operation failed.', icon: '⚠️' });
+            jjAlert({
+              title: "Save failed",
+              message: data.message || "Operation failed.",
+              icon: "⚠️",
+            });
           }
         } catch (err) {
-          jjAlert({ title: 'Network error', message: 'Could not save. Please try again.', icon: '⚠️' });
+          jjAlert({
+            title: "Network error",
+            message: "Could not save. Please try again.",
+            icon: "⚠️",
+          });
         }
       });
 
       // ── Table action buttons (edit / delete) ──────────────
-      tableBody.addEventListener('click', (e) => {
-        const btn = e.target.closest('button');
+      tableBody.addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
         if (!btn) return;
-        const id = btn.getAttribute('data-id');
+        const id = btn.getAttribute("data-id");
 
-        if (btn.classList.contains('admin-delete-btn')) {
+        if (btn.classList.contains("admin-delete-btn")) {
           jjConfirm(
-            { title: 'Delete destination?', message: 'This POI will be permanently removed from the database.', confirmText: 'Yes, delete', danger: true, icon: '🗑️' },
+            {
+              title: "Delete destination?",
+              message:
+                "This POI will be permanently removed from the database.",
+              confirmText: "Yes, delete",
+              danger: true,
+              icon: "🗑️",
+            },
             async () => {
               try {
-                const res  = await fetch(`/admin/poi/${id}`, { method: 'DELETE' });
+                const res = await fetch(`/admin/poi/${id}`, {
+                  method: "DELETE",
+                });
                 const data = await res.json();
-                if (res.ok && data.status === 'success') {
+                if (res.ok && data.status === "success") {
                   loadPois();
                 } else {
-                  jjAlert({ title: 'Delete failed', message: data.message || 'Failed to delete.', icon: '⚠️' });
+                  jjAlert({
+                    title: "Delete failed",
+                    message: data.message || "Failed to delete.",
+                    icon: "⚠️",
+                  });
                 }
               } catch (err) {
-                jjAlert({ title: 'Network error', message: 'Could not delete. Please try again.', icon: '⚠️' });
+                jjAlert({
+                  title: "Network error",
+                  message: "Could not delete. Please try again.",
+                  icon: "⚠️",
+                });
               }
-            }
+            },
           );
-
-        } else if (btn.classList.contains('admin-edit-btn')) {
-          const poi = allPois.find(p => String(p.id) === id);
+        } else if (btn.classList.contains("admin-edit-btn")) {
+          const poi = allPois.find((p) => String(p.id) === id);
           if (!poi) return;
-          document.getElementById('destinationId').value = poi.id;
-          document.getElementById('name').value          = poi.name;
-          document.getElementById('category').value      = CATEGORY_REVERSE[poi.category] ?? poi.category;
-          document.getElementById('budget_level').value  = BUDGET_REVERSE[poi.budget_level]  ?? poi.budget_level;
-          document.getElementById('travel_style').value  = (poi.travel_style || '').toLowerCase();
-          document.getElementById('location').value      = poi.location;
-          document.getElementById('country').value       = poi.country || '';
-          document.getElementById('description').value   = poi.description || '';
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          document.getElementById("destinationId").value = poi.id;
+          document.getElementById("name").value = poi.name;
+          document.getElementById("category").value =
+            CATEGORY_REVERSE[poi.category] ?? poi.category;
+          document.getElementById("budget_level").value =
+            BUDGET_REVERSE[poi.budget_level] ?? poi.budget_level;
+          document.getElementById("travel_style").value = (
+            poi.travel_style || ""
+          ).toLowerCase();
+          document.getElementById("location").value = poi.location;
+          document.getElementById("country").value = poi.country || "";
+          document.getElementById("description").value = poi.description || "";
+          window.scrollTo({ top: 0, behavior: "smooth" });
         }
       });
 

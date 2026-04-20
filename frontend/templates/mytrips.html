@@ -1,16 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Trips | JalanJalan.AI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <title>My Trips | Route2Go</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
   </head>
   <body>
     <nav class="main-navbar">
       <div class="logo">
-        <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="Logo" />
-        <a href="{{ url_for('index') }}" class="no-underline">JalanJalan.AI</a>
+        <img
+          src="{{ url_for('static', filename='assets/logo.png') }}"
+          alt="Logo"
+        />
+        <a href="{{ url_for('index') }}" class="no-underline">Route2Go</a>
       </div>
       <ul class="nav-links">
         <li><a href="{{ url_for('about') }}">About</a></li>
@@ -19,24 +25,42 @@
       </ul>
       <div class="nav-actions">
         {% if session.get('user') %}
-          <a href="{{ url_for('trip') }}" class="create-trip-btn">Create a Trip</a>
-          <div class="user-profile">
-            <button class="profile-btn" title="{{ session.get('user').get('name', 'User') }}">
-              <span class="user-avatar-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="8" r="4"/>
-                  <path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
-                </svg>
-              </span>
-              <span class="user-name">{{ session.get('user').get('name', 'User') }}</span>
-            </button>
-            <div class="dropdown-menu">
-              <a href="{{ url_for('mytrips') }}">My Trips</a>
-              <a href="{{ url_for('user_logout') }}">Logout</a>
-            </div>
+        <a href="{{ url_for('trip') }}" class="create-trip-btn"
+          >Create a Trip</a
+        >
+        <div class="user-profile">
+          <button
+            class="profile-btn"
+            title="{{ session.get('user').get('name', 'User') }}"
+          >
+            <span class="user-avatar-icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" />
+              </svg>
+            </span>
+            <span class="user-name"
+              >{{ session.get('user').get('name', 'User') }}</span
+            >
+          </button>
+          <div class="dropdown-menu">
+            <a href="{{ url_for('mytrips') }}">My Trips</a>
+            <a href="{{ url_for('user_logout') }}">Logout</a>
           </div>
+        </div>
         {% else %}
-          <a href="{{ url_for('user_login') }}" class="get-started-btn">Get started</a>
+        <a href="{{ url_for('user_login') }}" class="get-started-btn"
+          >Get started</a
+        >
         {% endif %}
       </div>
     </nav>
@@ -54,10 +78,20 @@
           <div class="trip-title">{{ t.title or 'Weekend Trip' }}</div>
           <div class="trip-date">{{ t.created_at }}</div>
           <div class="trip-activities">{{ t.description or '' }}</div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <a href="{{ url_for('view_trip', it_id=t.id) }}" class="plan-btn">View Details</a>
-            <a href="{{ url_for('mytrips_export', it_id=t.id) }}" class="plan-btn secondary" target="_blank" rel="noopener noreferrer">Export PDF</a>
-            <button class="plan-btn danger delete-btn" data-id="{{ t.id }}">Delete</button>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap">
+            <a href="{{ url_for('view_trip', it_id=t.id) }}" class="plan-btn"
+              >View Details</a
+            >
+            <a
+              href="{{ url_for('mytrips_export', it_id=t.id) }}"
+              class="plan-btn secondary"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Export PDF</a
+            >
+            <button class="plan-btn danger delete-btn" data-id="{{ t.id }}">
+              Delete
+            </button>
           </div>
         </div>
         {% endfor %}
@@ -67,48 +101,70 @@
 
     <script>
       // Navbar dropdown toggle
-      document.addEventListener('DOMContentLoaded', function () {
-        const userProfile = document.querySelector('.user-profile');
+      document.addEventListener("DOMContentLoaded", function () {
+        const userProfile = document.querySelector(".user-profile");
         if (!userProfile) return;
-        userProfile.querySelector('.profile-btn').addEventListener('click', function (e) {
-          e.stopPropagation();
-          userProfile.classList.toggle('open');
-        });
-        document.addEventListener('click', function (e) {
-          if (!userProfile.contains(e.target)) userProfile.classList.remove('open');
+        userProfile
+          .querySelector(".profile-btn")
+          .addEventListener("click", function (e) {
+            e.stopPropagation();
+            userProfile.classList.toggle("open");
+          });
+        document.addEventListener("click", function (e) {
+          if (!userProfile.contains(e.target))
+            userProfile.classList.remove("open");
         });
       });
 
       // Delete trip
-      document.addEventListener('click', (e) => {
-        const btn = e.target.closest('.delete-btn');
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".delete-btn");
         if (!btn) return;
-        const id = btn.getAttribute('data-id');
+        const id = btn.getAttribute("data-id");
         if (!id) return;
 
         jjConfirm(
-          { title: 'Delete trip?', message: 'This trip will be permanently deleted and cannot be recovered.', confirmText: 'Yes, delete', danger: true, icon: '🗑️' },
+          {
+            title: "Delete trip?",
+            message:
+              "This trip will be permanently deleted and cannot be recovered.",
+            confirmText: "Yes, delete",
+            danger: true,
+            icon: "🗑️",
+          },
           async () => {
             try {
-              const res  = await fetch(`/mytrips/${id}/delete`, { method: 'DELETE' });
+              const res = await fetch(`/mytrips/${id}/delete`, {
+                method: "DELETE",
+              });
               const data = await res.json();
-              if (res.ok && data.status === 'success') {
-                const card = document.querySelector(`.trip-card[data-id="${id}"]`);
+              if (res.ok && data.status === "success") {
+                const card = document.querySelector(
+                  `.trip-card[data-id="${id}"]`,
+                );
                 if (card) card.remove();
-                if (!document.querySelector('.trip-card')) {
-                  document.getElementById('trips-root').innerHTML = `
+                if (!document.querySelector(".trip-card")) {
+                  document.getElementById("trips-root").innerHTML = `
                     <div class="empty-container" id="empty-msg">
                       <h2>It seems like you have no trips...</h2>
                       <a href="/trip" class="center-btn">Plan my trip ➝</a>
                     </div>`;
                 }
               } else {
-                jjAlert({ title: 'Could not delete', message: data.message || 'Failed to delete the trip.', icon: '⚠️' });
+                jjAlert({
+                  title: "Could not delete",
+                  message: data.message || "Failed to delete the trip.",
+                  icon: "⚠️",
+                });
               }
             } catch (err) {
-              jjAlert({ title: 'Network error', message: 'Something went wrong. Please try again.', icon: '⚠️' });
+              jjAlert({
+                title: "Network error",
+                message: "Something went wrong. Please try again.",
+                icon: "⚠️",
+              });
             }
-          }
+          },
         );
       });
     </script>
