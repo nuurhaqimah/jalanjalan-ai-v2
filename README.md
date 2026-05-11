@@ -2,6 +2,9 @@
 
 An AI-powered travel planner that generates personalised weekend itineraries through a chatbot interface, complete with images, accommodation suggestions, and flight search.
 
+<img width="1901" height="1179" alt="Screenshot 2026-05-11 091245" src="https://github.com/user-attachments/assets/03810e48-bf9d-4a48-96fb-259151fac963" />
+
+
 ## Project Structure
 
 ```
